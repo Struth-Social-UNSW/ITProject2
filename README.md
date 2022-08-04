@@ -26,7 +26,7 @@ Issues will be tracked on Trello
   - Inside the backend folder, open a terminal window. Then run the command: 
   - pip install -r requirements.txt
 - For the frontend:
-  - Inside the backend folder, open a terminal window. Then run the command: 
+  - Inside the frontend folder, open a terminal window. Then run the command: 
   - pip install -r requirements.txt
 
 ## Front-end
