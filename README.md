@@ -36,7 +36,7 @@ Issues will be tracked on Trello
 
 ### Technologies in use
 - **Python 3.10**: Underlying language enabling the program to run
-- **covid-twitter-bert-v2**: Pretrained BERT model for analysing COVID-19 Twitter data
+- **covid-twitter-bert**: Pretrained BERT model for analysing COVID-19 Twitter data
   - **tensorflow==2.2.0**: Tensorflow is the Deep Learning library which will enable to BERT model to function as expected
   - **tensorflow_hub**: A repository of trained ML/DL models
   - **tensorflow_addons==0.11.2**: A library containing useful tools for the Tensorflow package
