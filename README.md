@@ -35,6 +35,14 @@ Issues will be tracked on Trello
 - ```CMD HERE```: Explain what the command does
 
 ### Technologies in use
+- Explain technologies in use
+
+## Back-end
+
+### Development commands
+- ```CMD HERE```: Explain what the command does
+
+### Technologies in use
 - **Python 3.10**: Underlying language enabling the program to run
 - **covid-twitter-bert**: Pretrained BERT model for analysing COVID-19 Twitter data
   - **tensorflow==2.2.0**: Tensorflow is the Deep Learning library which will enable to BERT model to function as expected
