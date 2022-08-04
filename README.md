@@ -47,7 +47,6 @@ Issues will be tracked on Trello
   - **google-cloud-storage**: Access path for use of TPUs in DL tasks
   - **spacy**: A commercial grade NLP package
   - **emoji**: Contains the codes for all current emojis
-  - **spacy**: A commercial grade NLP package
   - **unidecode**: Decodes unicode strings into ASCII characters
   - **cloud-tpu-client**: Interface for using TPUs
   - **sentencepiece**: Unsupervised text tokeniser/detokeniser
