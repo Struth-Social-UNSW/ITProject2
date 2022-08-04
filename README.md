@@ -4,6 +4,8 @@ This is the GitHub repository for the IT Project Team Struth Social's Fake News 
 - [Struth Social]
   - [Development Workflow](#development-workflow)
   - [Setting up the project (IMPORTANT)](#setting-up-the-project-important)
+    - [For the frontend](#for-the-frontend)
+    - [For the backend](#for-the-backend)
   - [Front-end](#front-end)
     - [Development commands](#development-commands)
     - [Technologies in use](#technologies-in-use)
@@ -21,12 +23,11 @@ Issues will be tracked on Trello
 
 
 ## Setting up the project (IMPORTANT)
-- You will need Python installed for both the backend and the frontend. Download the latest version here: https://www.python.org/downloads/
-- For the backend:
+- You will need Python 3.8 installed for both the backend and the frontend. Download the relevant version here: [https://www.python.org/downloads/](https://www.python.org/downloads/release/python-380/)
+### For the frontend
+  - Enter any setup instructions here
+### For the backend
   - Inside the backend folder, open a terminal window. Then run the command: 
-  - pip install -r requirements.txt
-- For the frontend:
-  - Inside the frontend folder, open a terminal window. Then run the command: 
   - pip install -r requirements.txt
 
 ## Front-end
@@ -35,8 +36,16 @@ Issues will be tracked on Trello
 - ```CMD HERE```: Explain what the command does
 
 ### Technologies in use
-- **Python 3.10**: Underlying language enabling the program to run
-- **covid-twitter-bert-v2**: Pretrained BERT model for analysing COVID-19 Twitter data
+- Explain technologies in use
+
+## Back-end
+
+### Development commands
+- ```CMD HERE```: Explain what the command does
+
+### Technologies in use
+- **Python 3.8**: Underlying language enabling the program to run
+- **covid-twitter-bert**: Pretrained BERT model for analysing COVID-19 Twitter data
   - **tensorflow==2.2.0**: Tensorflow is the Deep Learning library which will enable to BERT model to function as expected
   - **tensorflow_hub**: A repository of trained ML/DL models
   - **tensorflow_addons==0.11.2**: A library containing useful tools for the Tensorflow package
