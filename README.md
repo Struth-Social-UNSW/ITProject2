@@ -4,8 +4,8 @@ This is the GitHub repository for the IT Project Team Struth Social's Fake News 
 - [Struth Social]
   - [Development Workflow](#development-workflow)
   - [Setting up the project (IMPORTANT)](#setting-up-the-project-important)
-    - [For the frontend:](#for-the-frontend:)
-    - [For the backend:](#for-the-backend:)
+    - [For the frontend](#for-the-frontend)
+    - [For the backend](#for-the-backend)
   - [Front-end](#front-end)
     - [Development commands](#development-commands)
     - [Technologies in use](#technologies-in-use)
@@ -24,9 +24,9 @@ Issues will be tracked on Trello
 
 ## Setting up the project (IMPORTANT)
 - You will need Python 3.8 installed for both the backend and the frontend. Download the relevant version here: [https://www.python.org/downloads/](https://www.python.org/downloads/release/python-380/)
-### For the frontend:
+### For the frontend
   - Enter any setup instructions here
-### For the backend:
+### For the backend
   - Inside the backend folder, open a terminal window. Then run the command: 
   - pip install -r requirements.txt
 
