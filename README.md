@@ -4,6 +4,8 @@ This is the GitHub repository for the IT Project Team Struth Social's Fake News 
 - [Struth Social]
   - [Development Workflow](#development-workflow)
   - [Setting up the project (IMPORTANT)](#setting-up-the-project-important)
+    - [For the frontend:](#for-the-frontend:)
+    - [For the backend:](#for-the-backend:)
   - [Front-end](#front-end)
     - [Development commands](#development-commands)
     - [Technologies in use](#technologies-in-use)
