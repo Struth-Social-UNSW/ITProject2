@@ -1,7 +1,7 @@
 # IT Project 2: Struth Social
 This is the GitHub repository for the IT Project Team Struth Social's Fake News Detection Web Application.
 
-- [Java-Teaching-Tool](#java-teaching-tool)
+- [Struth Social]
   - [Development Workflow](#development-workflow)
   - [Setting up the project (IMPORTANT)](#setting-up-the-project-important)
   - [Front-end](#front-end)
