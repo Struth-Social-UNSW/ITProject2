@@ -44,10 +44,21 @@ Issues will be tracked on Trello
 - ```CMD HERE```: Explain what the command does
 
 ### Technologies in use
-- **Technology 1**: What the tech is
-  - **SubTech1**: What the subtech is
-  - **SubTech2**: What the subtech is
-- **Technology 2**: What the tech is
+- **covid-twitter-bert**: Pretrained BERT model for analysing COVID-19 Twitter data
+  - **tensorflow==2.2.0**: Tensorflow is the Deep Learning library which will enable to BERT model to function as expected
+  - **tensorflow_hub**: A repository of trained ML/DL models
+  - **tensorflow_addons==0.11.2**: A library containing useful tools for the Tensorflow package
+  - **gin-config**: Lightweight config framework for Python, useful for the injection of multiple parameters in ML/DL tasks
+  - **tqdm**: A package containing a graphical progress bar
+  - **pandas**: Open source data analysis and manipulation tool
+  - **scikit-learn**: Preprocessing and feature extraction tool
+  - **google-cloud-storage**: Access path for use of TPUs in DL tasks
+  - **spacy**: A commercial grade NLP package
+  - **emoji**: Contains the codes for all current emojis
+  - **spacy**: A commercial grade NLP package
+  - **unidecode**: Decodes unicode strings into ASCII characters
+  - **cloud-tpu-client**: Interface for using TPUs
+  - **sentencepiece**: Unsupervised text tokeniser/detokeniser
 
 ## The Team
 Callum Pevere  (c.pevere@student.unsw.edu.au)
