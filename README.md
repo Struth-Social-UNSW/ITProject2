@@ -22,11 +22,10 @@ Issues will be tracked on Trello
 
 ## Setting up the project (IMPORTANT)
 - You will need Python 3.8 installed for both the backend and the frontend. Download the relevant version here: [https://www.python.org/downloads/](https://www.python.org/downloads/release/python-380/)
+- For the frontend:
+  - 
 - For the backend:
   - Inside the backend folder, open a terminal window. Then run the command: 
-  - pip install -r requirements.txt
-- For the frontend:
-  - Inside the frontend folder, open a terminal window. Then run the command: 
   - pip install -r requirements.txt
 
 ## Front-end
