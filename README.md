@@ -25,7 +25,9 @@ Issues will be tracked on Trello
 ## Setting up the project (IMPORTANT)
 - You will need Python 3.8 installed for both the backend and the frontend. Download the relevant version here: [https://www.python.org/downloads/](https://www.python.org/downloads/release/python-380/)
 ### For the frontend
-  - Enter any setup instructions here
+  - Install the requirements listed in the Flask_App readme using:
+  - pip install flask
+  - pip install tweepy
 ### For the backend
   - Inside the backend folder, open a terminal window. Then run the command: 
   - pip install -r requirements.txt
@@ -36,7 +38,9 @@ Issues will be tracked on Trello
 - ```CMD HERE```: Explain what the command does
 
 ### Technologies in use
-- Explain technologies in use
+- **Python 3.8**: Underlying language enabling the program to run
+- **Flask 1.1.2**: Python framework for locally hosting web application
+- **Tweepy 4.10.0**: Python library for accessing the Twitter API.
 
 ## Back-end
 
