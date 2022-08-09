@@ -37,7 +37,8 @@ token_list = []
 
 # appends the processed tokens to the list
 for token in text_test:
-    token_list.append(token)
+    if str(token) != ' ':
+        token_list.append(token)
 
 ## 
 
