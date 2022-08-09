@@ -3,7 +3,6 @@
 import tweepy
 
 
-
 def RecentTweetsWrapper(Query: str):
     bearer_token = "AAAAAAAAAAAAAAAAAAAAAAczfgEAAAAAFpSw8BTNqunJaoVY6hdveuPInMM%3Dx09FECpMed9Zo0KCtD01KHrCWlmUvsUNPX1Yx6ot0ktghQi7U3"
 
@@ -37,7 +36,6 @@ def RecentTweetsWrapper(Query: str):
     # response = client.search_recent_tweets("Covid", max_results=100)
 
 
-
 def ResolveAuthorUsernameFromID(ID):
     bearer_token = "AAAAAAAAAAAAAAAAAAAAAAczfgEAAAAAFpSw8BTNqunJaoVY6hdveuPInMM%3Dx09FECpMed9Zo0KCtD01KHrCWlmUvsUNPX1Yx6ot0ktghQi7U3"
 
@@ -49,14 +47,11 @@ def ResolveAuthorUsernameFromID(ID):
     response = client.get_users(ids=ID)
 
     for user in response.data:
-        return(user.username)
-    
-
+        return user.username
 
 
 if __name__ == "__main__":
     ReturnedTweets = RecentTweetsWrapper("Covid")
     for i in ReturnedTweets:
         print(i)
-
     print('###########################')

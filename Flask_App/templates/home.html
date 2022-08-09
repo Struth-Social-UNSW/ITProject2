@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
 <html>
-
 <head>
 	<meta charset="utf-8">
 	<title>Fake News Detection</title>
@@ -11,6 +10,7 @@
 
 
 <body>
+<!--Nav Bar-->
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="/home">STRUTH SOCIAL FAKE NEWS DETECTION</a>
@@ -30,10 +30,11 @@
 	<p style=text-align:center>Enter some text below and our algorithms will determine whether it is considered fake news.</p>
 	<br>
 	<div class='container'>
+<!--		form for collecting user input-->
 		<form action="{{ url_for('home') }}" method="POST">
 			<div class="col-three-forth text-center col-md-offset-2">
 				<div class="form-group">
-					<textarea class="form-control jTextarea mt-3" id="jTextarea'" rows="5" name="searchInput"
+					<textarea class="form-control jTextarea mt-3" id="jTextarea'" rows="2" name="searchInput"
 					 placeholder="Enter your text here..." required>{{searchInput}}</textarea>
 					<br><br>
 					<button class="btn btn-primary btn-outline btn-md" type="submit" name="predict">Predict</button>
@@ -42,6 +43,7 @@
 		</form>
 	</div>
 	<br>
+<!--	printing result-->
 	{% if result %}
 	<p style="text-align:center"><strong>Prediction : {{result}}</strong></p>
 	{% endif %}
