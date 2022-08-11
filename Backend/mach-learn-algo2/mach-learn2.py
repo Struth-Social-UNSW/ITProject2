@@ -2,6 +2,7 @@
 # Detect if a given news article is fake or real
 #
 # Import modules
+from turtle import update
 import numpy as np
 import pandas as pd
 import pickle
@@ -9,7 +10,6 @@ import pickle
 # Import libraries from scikit learn
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.model_selection import train_test_split
-# from sklearn.featupd.read_csvre_extraction.text import TfidVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import PassiveAggressiveClassifier
@@ -18,6 +18,11 @@ from sklearn.naive_bayes import MultinomialNB
 
 # Load and read data from csv file
 dataset = pd.read_csv('general-news.csv')
+
+# Remove any unknown or unlabeled rows
+dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
+#dataset.drop(dataset[(dataset['label'] != 'TRUE') & (dataset['label'] != 'FALSE')].index, inplace = True)
+
 x = dataset['text']
 y = dataset['label']
 #print(x)
