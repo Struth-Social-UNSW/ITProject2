@@ -74,3 +74,28 @@ print(confusion_matrix(y_test, pred))
 with open('model.pkl', 'wb') as handle:
     pickle.dump(pipeline, handle, protocol = pickle.HIGHEST_PROTOCOL)
 
+with open('model.pkl', 'rb') as handle:
+    model = pickle.load(handle)
+
+news = input("\nEnter tweet: ")
+#news.parse()
+#news.nlp()
+#tweet = news.summary
+
+pred = model.predict([news])
+print("The tweet is ", pred[0], "\n\n")
+
+
+
+print('Please make your selection: ')
+print('1. Test Tweet')
+print('2. Exit')
+selection = int(input())
+while selection != 2:
+    news = input("\nEnter tweet: ")
+    pred = model.predict([news])
+    print("The tweet is ", pred[0], "\n\n")
+    print('Please make your selection: ')
+    print('1. Test Tweet')
+    print('2. Exit')
+    selection = int(input())
