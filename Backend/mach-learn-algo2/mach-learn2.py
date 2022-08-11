@@ -30,12 +30,14 @@ y = dataset['label']
 dataset.head()
 #print(dataset)
 # Rows and columns
-dataset.shape
+print('Dataset rows & columns: ', dataset.shape)
 
 # Pre-processing
 
 # Check dataset for null values
-dataset.isnull().any
+if(dataset.isnull().any):
+    print('Null exists')
+print(dataset.isnull().any)
 
 # Divide data for training and testing (currently 80:20 - train:test)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2)
