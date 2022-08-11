@@ -1,21 +1,23 @@
+# This algorithm currently reads data, conducts some training and testing outputing an accuracy level 
+#
 # Import modules
 import numpy as np
 import pandas as pd
 import itertools
-
-from pandas import DataFrame as df
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 # Read data from csv file
-data=pd.read_csv('general-news.csv')
+data=pd.read_csv('covid-news.csv')
 data.head()
+print(data)
 
-# Extract labels from csv file and print first five labels
-lb=df.label
+# Extract labels from csv file
+lb=data.label
 lb.head()
+print(lb)
 
 # Split data for training and testing (currently 80:20 - train:test)
 x_train,x_test,y_train,y_test=train_test_split(data['text'], lb, test_size=0.2, random_state=7)
@@ -33,8 +35,10 @@ pac.fit(tfidf_train,y_train)
 
 # Predictions about testing data
 y_pred=pac.predict(tfidf_test)
+print(y_pred)
 
 # Calculate accuracy of model over testing data
 score=accuracy_score(y_test,y_pred)
 
 print("Accuracy: ",round(score*100,2),"%")
+
