@@ -77,10 +77,8 @@ with open('model.pkl', 'wb') as handle:
 with open('model.pkl', 'rb') as handle:
     model = pickle.load(handle)
 
+
 news = input("\nEnter tweet: ")
-#news.parse()
-#news.nlp()
-#tweet = news.summary
 
 pred = model.predict([news])
 print("The tweet is ", pred[0], "\n\n")
