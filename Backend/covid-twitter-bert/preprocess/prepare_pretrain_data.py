@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 DATA_FOLDER = os.path.join('..', 'data')
 
 def get_input_files(input_folder):
-    return glob.glob(os.path.join(input_folder, '**', '*.txt'))
+    return glob.glob(os.path.join(input_folder, '*.txt'))
 
 def get_run_name(args):
     # Use timestamp to generate a unique run name

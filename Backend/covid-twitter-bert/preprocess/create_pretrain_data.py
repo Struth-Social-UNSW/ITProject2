@@ -29,7 +29,10 @@ def get_tokenizer(model_class):
     return tokenizer
 
 def get_input_files(run_folder):
-    input_files = glob.glob(os.path.join(run_folder, 'preprocessed', '**', '*.txt'))
+    print(run_folder)
+    print(os.getcwd())
+    input_files = glob.glob(os.path.join(run_folder, 'preprocessed/', '*.txt'))
+    print(input_files)
     if len(input_files) == 0:
         raise ValueError(f'No txt files found in folder {run_folder}/preprocessed')
     return input_files
