@@ -10,8 +10,6 @@ import re       # regex ops utility
 import html     # for the resolution of HTML entities
 import emoji    # for conversion of emojis
 
-orig_text = "As of 18 August 2020 8AM till now there have been a total of 4687 #COVID19 positive cases &amp; 17 #COVID_19 related deaths in #Manipur #COVID__19 #COVIDー19 #COVID19India #COVIDUpdates #CoronaUpdates #Corona #coronavirus #CoronavirusIndia #CoronavirusUpdates #CoronavirusPandemic https://t.co/au9kzAchGh � 😂"
-
 def twitter_cleaning(input):
     """ This function prepares the input for preprocessing by removing Twitter specific
         data such as:
@@ -21,9 +19,12 @@ def twitter_cleaning(input):
         
         This function also converts emojis into text, for example:
             -😂 becomes :face_with_tears_of_joy:
+
+        ** Parameters **
+        input: a str containing the body of a Tweet
     """
     ## Removing URLs
-    remurl = re.sub('http://\S+|https://\S+', '', orig_text)
+    remurl = re.sub('http://\S+|https://\S+', '', input)
 
     ## Removing Twitter Handles
     remhand = re.sub('@[^\s]+', '', remurl)
@@ -36,15 +37,18 @@ def twitter_cleaning(input):
 
     return rememoji
 
-def general_cleanup(input_text):
+def general_cleanup(input):
     """ This function prepares the input for preprocessing by tidying general
         data such as:
             -removing non-ASCII characters
             -removing HTML entities
             -removing additional spaces created during preprocessing preparation
+
+        ** Parameters **
+        input: a str containing the body of a Tweet
     """
     ## Removing non-ASCII characters
-    nonascii = rememoji.encode("ascii", "ignore")
+    nonascii = input.encode("ascii", "ignore")
     remnonascii = nonascii.decode()
 
     # Removing HTML entities
@@ -53,11 +57,9 @@ def general_cleanup(input_text):
     # Cleaning up double spaces created in removal
     remspc = re.sub(' +', ' ', remhtml)
 
-    print(remspc)
-
     return remspc
 
-def spacy_preproc(input_text):
+def spacy_preproc(input):
     """ This function enables the preprocessing of the Tweet using the spaCy libraries.
         First, the spaCy language model is loaded into the program, before tokenization occurs.
         This exchanges the string values into tokens which can be used again by spaCy.
@@ -65,13 +67,16 @@ def spacy_preproc(input_text):
         Excess spaces are then removed and colons removed. The colons appear from the conversion
         of emojis to text representation. Finally, the tokens are lemmatised before they are
         output as str objects to a new list.
+
+        ** Parameters **
+        input: a str containing the body of a Tweet
     """
     # loading the basic English library for preprocessing tasks
     nlp = spacy.load('en_core_web_sm')
     stopword_list = nlp.Defaults.stop_words
 
     # sets the text being input for preprocessing
-    text_test = nlp(remspc)
+    text_test = nlp(input)
 
     ## Tokenisation
     # creates a list to hold the results of the tokenization
@@ -105,8 +110,6 @@ def spacy_preproc(input_text):
         if str(token) == '&':
             stopwords_rem.remove(token)
 
-    print(stopwords_rem)
-
     # creating a list of lemmatised tokens from the sentence
     lemma_text = []
 
@@ -122,3 +125,5 @@ def main(input_text):
     general_cleaned = general_cleanup(twitter_cleaned)
     spacy_cleaned = spacy_preproc(general_cleaned)
     return spacy_cleaned
+
+main("As of 18 August 2020 8AM till now there have been a total of 4687 #COVID19 positive cases &amp; 17 #COVID_19 related deaths in #Manipur #COVID__19 #COVIDー19 #COVID19India #COVIDUpdates #CoronaUpdates #Corona #coronavirus #CoronavirusIndia #CoronavirusUpdates #CoronavirusPandemic https://t.co/au9kzAchGh � 😂")
