@@ -46,6 +46,9 @@ def general_cleanup(input):
 
         ** Parameters **
         input: a str containing the body of a Tweet
+
+        ** Returns **
+        A string object containing the original Tweet processed 
     """
     ## Removing non-ASCII characters
     nonascii = input.encode("ascii", "ignore")
@@ -70,6 +73,9 @@ def spacy_preproc(input):
 
         ** Parameters **
         input: a str containing the body of a Tweet
+
+        ** Returns **
+        A string object of the processed original Tweet
     """
     # loading the basic English library for preprocessing tasks
     nlp = spacy.load('en_core_web_sm')
@@ -87,16 +93,10 @@ def spacy_preproc(input):
         if str(token) != ' ':
             token_list.append(token)
 
-    print('Pre colon removal\br')
-    print(token_list)
-
     ## removes any colons which enter the token list
     for tokens in token_list:
         if str(tokens) == ':':
             token_list.remove(tokens)
-
-    print('Post colon removal\br')
-    print(token_list)
 
     # list for the removed stopwords
     stopwords_rem = []
@@ -117,13 +117,13 @@ def spacy_preproc(input):
     for word in stopwords_rem:
         lemma_text.append(word.lemma_)
 
-    print(lemma_text)
+    preproc_str = ' '.join(lemma_text)
 
-def main(input_text):
+    return preproc_str
+
+def preprocmain(input_text):
     """The main function for this program. Controls the I/O and flow of program execution"""
     twitter_cleaned = twitter_cleaning(input_text)
     general_cleaned = general_cleanup(twitter_cleaned)
     spacy_cleaned = spacy_preproc(general_cleaned)
     return spacy_cleaned
-
-main("As of 18 August 2020 8AM till now there have been a total of 4687 #COVID19 positive cases &amp; 17 #COVID_19 related deaths in #Manipur #COVID__19 #COVIDー19 #COVID19India #COVIDUpdates #CoronaUpdates #Corona #coronavirus #CoronavirusIndia #CoronavirusUpdates #CoronavirusPandemic https://t.co/au9kzAchGh � 😂")
