@@ -1,4 +1,4 @@
-# This algorithm currently reads data, conducts some training and testing outputing an accuracy level 
+# This algorithm currently reads data, conducts some training and testing outputing an accuracy level
 # Detect if a given news article is fake or real
 #
 # Import modules
@@ -18,6 +18,7 @@ from sklearn.naive_bayes import MultinomialNB
 
 # Load and read data from csv file
 dataset = pd.read_csv('kaggle-covid-news.csv')
+print('Dataset shape: ', dataset.shape)
 
 # Remove any unknown or unlabeled rows
 dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
@@ -27,7 +28,7 @@ x = dataset['text']
 y = dataset['label']
 #print(x)
 #print(y)
-dataset.head()
+print('Dataset.head: \n', dataset.head())
 #print(dataset)
 # Rows and columns
 print('Dataset rows & columns: ', dataset.shape)
