@@ -17,7 +17,7 @@ from sklearn.naive_bayes import MultinomialNB
 
 
 # Load and read data from csv file
-dataset = pd.read_csv('general-news.csv')
+dataset = pd.read_csv('kaggle-covid-news.csv')
 
 # Remove any unknown or unlabeled rows
 dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
