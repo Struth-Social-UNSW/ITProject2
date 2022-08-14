@@ -6,16 +6,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import string
-import ntlk
-ntlk.download('stopwords')
+import nltk
+nltk.download('stopwords')
+import itertools
 
 # Import libraries from scikit learn
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn import feature_extraction, linear_model, model_selection, preprocessing
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+from sklearn import metrics
+from sklearn.metrics import confusion_matrix
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 # Import libraries from ntlk
 from nltk.corpus import stopwords
@@ -63,7 +69,7 @@ print('Fake: ', dataset.groupby(['target1'])['label'].count())
 print('True: ', dataset.groupby(['target2'])['label'].count())
 
 # Word cloud for fake news
-fake_data = dataset[dataset["target"] == "fake"]
+fake_data = dataset[dataset["target1"] == "fake"]
 all_words = ' '.join([text for text in fake_data.text])
 
 wordcloud = WordCloud(width = 800,
@@ -74,10 +80,10 @@ wordcloud = WordCloud(width = 800,
 plt.figure(figsize=(10,7))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
-plt.show()
+#plt.show()
 
 # Word cloud for real news
-real_data = dataset[dataset["target"] == "real"]
+real_data = dataset[dataset["target2"] == "real"]
 all_words = ' '.join([text for text in fake_data.text])
 
 wordcloud = WordCloud(width = 800,
@@ -88,7 +94,7 @@ wordcloud = WordCloud(width = 800,
 plt.figure(figsize=(10,7))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
-plt.show()
+#plt.show()
 
 # Most frequent words counter
 token_space = tokenize.WhitespaceTokenizer()
@@ -101,10 +107,10 @@ def counter(text, column_text, quantity):
                                 "Frequency": list(frequency.values())})
     df_frequency = df_frequency.nlargest(columns = "Frequency", n = quantity)
     plt.figure(figsize = (12,8))
-    ax = sns.barplot(dataset = df_frequency, x = "Word", y = "Frequency", color = 'blue')
+    ax = sns.barplot(data = df_frequency, x="Word", y = "Frequency", color = 'blue')
     ax.set(ylabel = "Count")
     plt.xticks(rotation = 'vertical')
-    plt.show()
+    #plt.show()
 
 # Most frequent words in fake news
 counter(dataset[dataset['target1'] == "fake"], "text", 20)
@@ -114,4 +120,108 @@ counter(dataset[dataset['target2'] == "true"], "text", 20)
 
 ### Modeling ###
 
-#
+# Confustion matrix
+def plot_confusion_matrix(cm, classes,
+                            normalize = False,
+                            title = 'Confusion matrix', 
+                            cmap = plt.cm.Blues):
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print('Normalised confusion matrix')
+    else:
+        print('Confustion matrix, without normalisation')
+
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, cm[i, j],
+                    horizontalalignment="center",
+                    color="white" if cm[i, j] > thresh else "black")
+    
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+
+### Preparing data ###
+
+# Divide data for training and testing (currently 80:20 - train:test)
+x_train, x_test, y_train, y_test = train_test_split(dataset['text'], dataset['label'], test_size = 0.2, random_state = 42)
+
+
+### Logistic regression ###
+
+# Vectorising and applying TF-IDF
+pipe = Pipeline([('vect', CountVectorizer()),
+                    ('tfidf', TfidfTransformer()), 
+                    ('model', LogisticRegression())])
+
+# Fitting the model
+model = pipe.fit(x_train, y_train)
+
+# Accuracy
+pred = model.predict(x_test)
+
+# Calculate accuracy of model over testing data
+score = accuracy_score(y_test, pred)
+print("Accuracy: ", round(score*100,2), "%")
+
+# Confusion matrix
+print(confusion_matrix(y_test, pred))
+cm = metrics.confusion_matrix(y_test, pred)
+plot_confusion_matrix(cm, classes=['Fake', 'Real'])
+
+
+### Decision Tree Classifier ###
+
+# Vectorising and applying TF-IDF
+pipe = Pipeline([('vect', CountVectorizer()),
+                    ('tfidf', TfidfTransformer()), 
+                    ('model', DecisionTreeClassifier(criterion= 'entropy',
+                                                                max_depth=20,
+                                                                splitter='best',
+                                                                random_state=42))])
+
+# Fitting the model
+model = pipe.fit(x_train, y_train)
+
+# Accuracy
+pred = model.predict(x_test)
+
+# Calculate accuracy of model over testing data
+score = accuracy_score(y_test, pred)
+print("Accuracy: ", round(score*100,2), "%")
+
+# Confusion matrix
+print(confusion_matrix(y_test, pred))
+cm = metrics.confusion_matrix(y_test, pred)
+plot_confusion_matrix(cm, classes=['Fake', 'Real'])
+
+
+### Random Forest Classifier ###
+
+# Vectorising and applying TF-IDF
+pipe = Pipeline([('vect', CountVectorizer()),
+                    ('tfidf', TfidfTransformer()), 
+                    ('model', RandomForestClassifier(n_estimators=50,
+                                                                criterion='entropy'))])
+
+# Fitting the model
+model = pipe.fit(x_train, y_train)
+
+# Accuracy
+pred = model.predict(x_test)
+
+# Calculate accuracy of model over testing data
+score = accuracy_score(y_test, pred)
+print("Accuracy: ", round(score*100,2), "%")
+
+# Confusion matrix
+print(confusion_matrix(y_test, pred))
+cm = metrics.confusion_matrix(y_test, pred)
+plot_confusion_matrix(cm, classes=['Fake', 'Real'])
