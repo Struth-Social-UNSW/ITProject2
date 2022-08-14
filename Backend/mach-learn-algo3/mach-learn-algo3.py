@@ -139,7 +139,7 @@ def plot_confusion_matrix(cm, classes,
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         print('Normalised confusion matrix')
     else:
-        print('Confustion matrix, without normalisation')
+        print('Confusion matrix, without normalisation')
 
     thresh = cm.max() / 2.
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
