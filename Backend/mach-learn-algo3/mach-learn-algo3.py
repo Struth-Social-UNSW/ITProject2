@@ -36,17 +36,24 @@ print('Dataset shape: ', dataset.shape)
 
 ### Pre-processing ###
 
+# Determine weight of dataset
+countFalse = dataset['label'].value_counts()
+print(countFalse)
+
+countFalse = dataset['label'].value_counts('false')
+print(countFalse)
+
 # Add flag to track fake and real articles
 dataset['target1'] = 'fake'
 dataset['target2'] = 'true'
 
 # Remove any unknown or unlabeled rows
 dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
-print('\nDataset.head: \n', dataset.head())
+#print('\nDataset.head: \n', dataset.head())
 
 # Convert to lowercase
 dataset['text'] = dataset['text'].apply(lambda x: x.lower())
-print('\nDataset.head: \n', dataset.head())
+#print('\nDataset.head: \n', dataset.head())
 
 # Remove punctuation
 def punctuation_removal(text):
@@ -55,7 +62,7 @@ def punctuation_removal(text):
     return clean_str
 
 dataset['text'] = dataset['text'].apply(punctuation_removal)
-print('\nDataset.head: \n', dataset.head())
+#print('\nDataset.head: \n', dataset.head())
 
 # Remove stopwords
 stop = stopwords.words('english')
@@ -63,10 +70,6 @@ dataset['text'] = dataset['text'].apply(lambda x: ' '.join([word for word in x.s
 print('\nDataset.head: \n', dataset.head())
 
 ### Data Exploration ###
-
-# How many fake and real articles?
-print('Fake: ', dataset.groupby(['target1'])['label'].count())
-print('True: ', dataset.groupby(['target2'])['label'].count())
 
 # Word cloud for fake news
 fake_data = dataset[dataset["target1"] == "fake"]
@@ -169,6 +172,7 @@ pred = model.predict(x_test)
 
 # Calculate accuracy of model over testing data
 score = accuracy_score(y_test, pred)
+print('\n*** Logistic regression ***')
 print("Accuracy: ", round(score*100,2), "%")
 
 # Confusion matrix
@@ -195,6 +199,7 @@ pred = model.predict(x_test)
 
 # Calculate accuracy of model over testing data
 score = accuracy_score(y_test, pred)
+print('\n*** Decision Tree Classifier ***')
 print("Accuracy: ", round(score*100,2), "%")
 
 # Confusion matrix
@@ -219,6 +224,7 @@ pred = model.predict(x_test)
 
 # Calculate accuracy of model over testing data
 score = accuracy_score(y_test, pred)
+print('\n*** Random Forest Classifier ***')
 print("Accuracy: ", round(score*100,2), "%")
 
 # Confusion matrix
