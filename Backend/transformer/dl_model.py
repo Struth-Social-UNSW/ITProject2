@@ -23,4 +23,4 @@ def dlmodelmain(input):
     """
     pipe = pipeline(task='feature-extraction', model='digitalepidemiologylab/covid-twitter-bert-v2')
     out = pipe(input)
-    print(json.dumps(out, indent=4))
+    return out
