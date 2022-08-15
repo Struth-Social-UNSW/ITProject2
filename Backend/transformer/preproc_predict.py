@@ -98,23 +98,23 @@ def spacy_preproc(input):
         if str(tokens) == ':':
             token_list.remove(tokens)
 
-    # list for the removed stopwords
-    stopwords_rem = []
+    # # list for the removed stopwords
+    # stopwords_rem = []
 
-    # removes stopwords from the text
-    for token in token_list:
-        if str(token) not in stopword_list:
-            stopwords_rem.append(token)
+    # # removes stopwords from the text
+    # for token in token_list:
+    #     if str(token) not in stopword_list:
+    #         stopwords_rem.append(token)
 
-    for token in stopwords_rem:
-        if str(token) == '&':
-            stopwords_rem.remove(token)
+    # for token in stopwords_rem:
+    #     if str(token) == '&':
+    #         stopwords_rem.remove(token)
 
     # creating a list of lemmatised tokens from the sentence
     lemma_text = []
 
     # adds lemmatised version of all words (if applicable) into a final list, ready for the model
-    for word in stopwords_rem:
+    for word in token_list:
         lemma_text.append(word.lemma_)
 
     preproc_str = ' '.join(lemma_text)

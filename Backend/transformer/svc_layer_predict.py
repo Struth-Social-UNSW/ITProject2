@@ -20,6 +20,7 @@ clf = make_pipeline(StandardScaler(), SVC(gamma='auto'))
 def training(features, labels):
     X = features
     y = labels
+    print("Beginnning Fit Task")
     clf.fit(X, y)
     
 def testing(feature, label):
@@ -30,5 +31,7 @@ def testing(feature, label):
         print("Failed")
 
 
-featuresx = np.array()
-training()
+featuresx = np.array([[1,2,3,4,5,6,7,8,9,10], [2,3,4,5,6,7,8,9,10,11], [3,4,5,6,7,8,9,10,11,12], [4,5,6,7,8,9,10,11,12,13]])
+featuresy = np.array([1,0,0,1])
+
+training(featuresx, featuresy)

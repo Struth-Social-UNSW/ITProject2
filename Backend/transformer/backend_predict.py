@@ -21,6 +21,6 @@ def main(input):
     """
     preproc = preprocmain(input)
     vector = dlmodelmain(preproc)
-    print(json.dumps(vector, indent=4))
+    print(vector)
 
-main("Take simple daily precautions to help prevent the spread of respiratory illnesses like #COVID19. Learn how to protect yourself from coronavirus (COVID-19): https://t.co/uArGZTrH5L. https://t.co/biZTxtUKyK")
+main("If you tested positive for #COVID19 and have no symptoms stay home and away from other people. Learn more about CDCï¿½s recommendations about when you can be around others after COVID-19 infection: https://t.co/z5kkXpqkYb. https://t.co/9PaMy0Rxaf")

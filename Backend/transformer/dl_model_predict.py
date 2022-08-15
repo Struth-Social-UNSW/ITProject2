@@ -9,8 +9,11 @@ __date__        = "12 Aug 22"
 __Version__     = 1.0
 
 # importing required libraries
+from sre_parse import Tokenizer
 from transformers import pipeline
+import tensorflow as tf
 import json
+import numpy
 
 def dlmodelmain(input):
     """ This function contains the model which takes in a string or list of strings and performs an analysis of that text
@@ -21,6 +24,9 @@ def dlmodelmain(input):
         ** Returns **
         A many dimensional vector modelling the features of the text, as per the pretraining of the model
     """
+    
     pipe = pipeline(task='feature-extraction', model='digitalepidemiologylab/covid-twitter-bert-v2')
     out = pipe(input)
-    return out
+    toarr = out[0][0]
+    array = numpy.array(toarr)
+    return array
