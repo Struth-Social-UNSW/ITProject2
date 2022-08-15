@@ -10,7 +10,7 @@ __Version__     = 1.0
 
 # importing utility scripts
 from preproc import *
-from model import *
+from dl_model import *
 
 
 def main(input):
@@ -20,5 +20,7 @@ def main(input):
         input: a str containing the body of a Tweet
     """
     preproc = preprocmain(input)
-    vector = modelmain(preproc)
+    vector = dlmodelmain(preproc)
+    print(json.dumps(vector, indent=4))
 
+main("Take simple daily precautions to help prevent the spread of respiratory illnesses like #COVID19. Learn how to protect yourself from coronavirus (COVID-19): https://t.co/uArGZTrH5L. https://t.co/biZTxtUKyK")
