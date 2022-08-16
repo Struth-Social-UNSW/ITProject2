@@ -5,10 +5,18 @@ __date__        = "12 Aug 22"
 __Version__     = 1.0
 
 # file imports for required libraries
-import spacy    # text preprocessing utility
-import re       # regex ops utility
-import html     # for the resolution of HTML entities
-import emoji    # for conversion of emojis
+import spacy            # text preprocessing utility
+import re               # regex ops utility
+import html             # for the resolution of HTML entities
+import emoji            # for conversion of emojis
+import pandas as pd     # for the formatting/reading of data
+
+def data_reading(input):
+    print(input)
+    input.drop(columns=['id'])
+    print(input)
+    
+    
 
 def twitter_cleaning(input):
     """ This function prepares the input for preprocessing by removing Twitter specific
@@ -121,9 +129,11 @@ def spacy_preproc(input):
 
     return preproc_str
 
-def preprocmain(input_text):
+def preprocmain(training, testing):
     """The main function for this program. Controls the I/O and flow of program execution"""
-    twitter_cleaned = twitter_cleaning(input_text)
-    general_cleaned = general_cleanup(twitter_cleaned)
-    spacy_cleaned = spacy_preproc(general_cleaned)
-    return spacy_cleaned
+    training_file = pd.read_csv('./trg_data/'+training)
+    data_reading(training_file)
+    # twitter_cleaned = twitter_cleaning(input_text)
+    # general_cleaned = general_cleanup(twitter_cleaned)
+    # spacy_cleaned = spacy_preproc(general_cleaned)
+    # return spacy_cleaned
