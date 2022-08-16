@@ -14,11 +14,10 @@ import itertools
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn import feature_extraction, linear_model, model_selection, preprocessing
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn import metrics
-from sklearn.metrics import confusion_matrix
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -176,7 +175,7 @@ print('\n*** Logistic regression ***')
 print("Accuracy: ", round(score*100,2), "%")
 
 # Confusion matrix
-print(confusion_matrix(y_test, pred))
+print(metrics.confusion_matrix(y_test, pred))
 cm = metrics.confusion_matrix(y_test, pred)
 plot_confusion_matrix(cm, classes=['Fake', 'Real'])
 

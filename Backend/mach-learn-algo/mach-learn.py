@@ -1,47 +1,320 @@
-# This algorithm currently reads data, conducts some training and testing outputing an accuracy level 
+# This algorithm currently reads data, conducts some training and testing outputing an accuracy level and confusion matrix
+#
+# NOTE: The dataset used must contain true/false labelling
+#
 #
 # Import modules
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import string
+import nltk
+nltk.download('stopwords')
 import itertools
 
 # Import libraries from scikit learn
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import PassiveAggressiveClassifier
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn import feature_extraction, linear_model, model_selection, preprocessing
+from sklearn import metrics
 from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
-# Load and read data from csv file
-dataset = pd.read_csv('covid-news.csv')
-dataset.head()
-print(dataset)
+# Import libraries from ntlk
+from nltk.corpus import stopwords
+from nltk import tokenize
 
-# Extract labels from csv file
-lb = dataset.label
-lb.head()
-print(lb)
+# Import libraried from WordCloud
+from wordcloud import WordCloud
 
-# Divide data for training and testing (currently 80:20 - train:test)
-x_train, x_test, y_train, y_test = train_test_split(dataset['text'], lb, test_size = 0.2, random_state = 7)
 
-# TFIDF-Vectorizor - text array converted to TF-IDF matrix to define importance of keyword
-# TF (Term Frequency) - number of times a word appears in text
-# IDF (Inverse Document Frequency) - measure of how significant a work is in the entire data
-tfidf_vectorizer = TfidfVectorizer(stop_words = 'english', max_df = 0.7)
-tfidf_train = tfidf_vectorizer.fit_transform(x_train)
-tfidf_test = tfidf_vectorizer.transform(x_test)
+###########################################################################
 
-# Passive Agressive Classifier - is an online learning alogorithm which remains passive for a correct classification and turns aggressive for miscalculations.
-# It updates loss after each iteration and changes weight vector
-pac = PassiveAggressiveClassifier(max_iter = 50)
-pac.fit(tfidf_train, y_train)
+#####  Load & Read Dataset  #####
 
-# Predictions about testing data
-y_pred = pac.predict(tfidf_test)
-print(y_pred)
+###  Read dataset  ###
+def read(dataFile):
+    # Load and read data from csv file
+    dataset = pd.read_csv(dataFile)
+    print('Dataset shape: ', dataset.shape)
 
-# Calculate accuracy of model over testing data
-score = accuracy_score(y_test, y_pred)
+    return dataset
 
-print("Accuracy: ", round(score*100, 2), "%")
 
+###########################################################################
+
+#####  Pre-Processing  #####
+
+
+###  Remove punctuation  ###
+def punctuation_removal(text):
+    all_list = [char for char in  text if char not in string.punctuation]
+    clean_str = ''.join(all_list)
+    return clean_str
+
+
+###  Pre-process dataset  ###
+def preprocess(dataset):
+    # Determine weight of dataset
+    countFalse = dataset['label'].value_counts()
+    print(countFalse)
+
+    countFalse = dataset['label'].value_counts('false')
+    print(countFalse)
+
+    # Add flag to track fake and real articles
+    dataset['target1'] = 'fake'
+    dataset['target2'] = 'true'
+
+    # Remove any unknown or unlabeled rows
+    dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
+    #print('\nDataset.head: \n', dataset.head())
+
+    # Convert to lowercase
+    dataset['text'] = dataset['text'].apply(lambda x: x.lower())
+    #print('\nDataset.head: \n', dataset.head())
+
+    # Remove punctuation
+    dataset['text'] = dataset['text'].apply(punctuation_removal)
+    #print('\nDataset.head: \n', dataset.head())
+
+    # Remove stopwords
+    stop = stopwords.words('english')
+    dataset['text'] = dataset['text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
+
+    # Print first 5 rows of dataset after pre-processing
+    print('\nDataset.head: \n', dataset.head())
+
+    return dataset
+
+
+###########################################################################
+
+#####  Data Exploration  #####
+
+
+###  Word cloud for FAKE news  ###
+def fakeCloud(dataset):
+    fake_data = dataset[dataset["target1"] == "fake"]
+    all_words = ' '.join([text for text in fake_data.text])
+
+    wordcloud = WordCloud(width = 800,
+                            height = 500,
+                            max_font_size = 110,
+                            collocations = False).generate(all_words)
+
+    plt.figure(figsize=(10,7))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()
+
+
+###  Word cloud for REAL news  ###
+def realCloud(dataset):
+    real_data = dataset[dataset["target2"] == "true"]
+    all_words = ' '.join([text for text in real_data.text])
+
+    wordcloud = WordCloud(width = 800,
+                            height = 500,
+                            max_font_size = 110,
+                            collocations = False).generate(all_words)
+
+    plt.figure(figsize=(10,7))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()
+
+
+###  Most frequent words counter  ###
+def counter(text, column_text, quantity, token_space):
+    all_words = ' '.join([text for text in text[column_text]])
+    token_phrase = token_space.tokenize(all_words)
+    frequency = nltk.FreqDist(token_phrase)
+    df_frequency = pd.DataFrame({"Word": list(frequency.keys()),
+                                "Frequency": list(frequency.values())})
+    df_frequency = df_frequency.nlargest(columns = "Frequency", n = quantity)
+    plt.figure(figsize = (12,8))
+    ax = sns.barplot(data = df_frequency, x="Word", y = "Frequency", color = 'blue')
+    ax.set(ylabel = "Count")
+    plt.xticks(rotation = 'vertical')
+    plt.show()
+
+
+###  Count most frequent words in fake and real news  ###
+def countWords(dataset):
+    token_space = tokenize.WhitespaceTokenizer()
+
+    # Most frequent words in fake news
+    counter(dataset[dataset['target1'] == "fake"], "text", 20, token_space)
+
+    # Most frequent words in real news
+    counter(dataset[dataset['target2'] == "true"], "text", 20, token_space)
+
+
+###########################################################################
+
+#####  Modelling  #####
+
+
+###  Calculate accuracy of model over testing data  ###
+def accuracy(y_test, predicted):
+    score = accuracy_score(y_test, predicted)
+    print("Accuracy: ", round(score*100,2), "%")
+
+
+###  Confustion matrix  ###
+def plotConfusionMatrix(cm, classes,
+                            normalize = False,
+                            title = 'Confusion matrix', 
+                            cmap = plt.cm.Blues):
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print('Normalised confusion matrix')
+    else:
+        print('Confusion matrix, without normalisation')
+
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, cm[i, j],
+                    horizontalalignment="center",
+                    color="white" if cm[i, j] > thresh else "black")
+    
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.show()
+
+
+###   Display Confustion Matrix  ###
+def dispConfusionMatrix(y_test, predicted):
+    print(metrics.confusion_matrix(y_test, predicted))
+    cm = metrics.confusion_matrix(y_test, predicted)
+    plotConfusionMatrix(cm, classes=['Fake', 'True'])
+
+
+###########################################################################
+
+#####  Data Preparation  #####
+
+
+###  Prepare data  ###
+def prepareData(dataset):
+    # Divide data for training and testing (currently 80:20 - train:test)
+    #x_train, x_test, y_train, y_test = train_test_split(dataset['text'], lb, test_size = 0.2, random_state = 7)
+
+    # Divide data for training and testing (currently 80:20 - train:test)
+    x_train, x_test, y_train, y_test = train_test_split(dataset['text'], dataset['label'], test_size = 0.2, random_state = 42)
+    return x_train, x_test, y_train, y_test
+
+
+###########################################################################
+
+#####  Classifiers  #####
+
+
+###  Logistic Regression  ###
+def logicRegression(x_train, x_test, y_train, y_test):
+    # Vectorising and applying TF-IDF
+    pipe = Pipeline([('vect', CountVectorizer()),
+                        ('tfidf', TfidfTransformer()), 
+                        ('model', LogisticRegression())])
+
+    # Fitting the model
+    model = pipe.fit(x_train, y_train)
+
+    # Accuracy
+    predicted = model.predict(x_test)
+
+    # Calculate accuracy of model over testing data
+    print('\n*** Logistic regression ***')
+    accuracy(y_test, predicted)
+
+    # Display confusion matrix
+    dispConfusionMatrix(y_test, predicted)
+
+    
+###  Decision Tree Classifier  ###
+def decisionTree(x_train, x_test, y_train, y_test):
+    # Vectorising and applying TF-IDF
+    pipe = Pipeline([('vect', CountVectorizer()),
+                        ('tfidf', TfidfTransformer()), 
+                        ('model', DecisionTreeClassifier(criterion= 'entropy',
+                                                                    max_depth=20,
+                                                                    splitter='best',
+                                                                    random_state=42))])
+
+    # Fitting the model
+    model = pipe.fit(x_train, y_train)
+
+    # Accuracy
+    predicted = model.predict(x_test)
+
+    # Calculate accuracy of model over testing data
+    print('\n*** Decision Tree Classifier ***')
+    accuracy(y_test, predicted)
+
+    # Display confusion matrix
+    dispConfusionMatrix(y_test, predicted)
+
+
+###  Random Forest Classifier  ###
+def randomForest(x_train, x_test, y_train, y_test):
+    # Vectorising and applying TF-IDF
+    pipe = Pipeline([('vect', CountVectorizer()),
+                        ('tfidf', TfidfTransformer()), 
+                        ('model', RandomForestClassifier(n_estimators=50,
+                                                                    criterion='entropy'))])
+
+    # Fitting the model
+    model = pipe.fit(x_train, y_train)
+
+    # Accuracy
+    predicted = model.predict(x_test)
+
+    # Calculate accuracy of model over testing data
+    print('\n*** Random Forest Classifier ***')
+    accuracy(y_test, predicted)
+
+    # Display confusion matrix
+    dispConfusionMatrix(y_test, predicted)
+
+
+
+###########################################################################
+
+#####  Main Program  #####
+
+
+# Dataset source
+dataFile = 'kaggle-covid-news.csv'
+
+# Load and read dataset
+data = read(dataFile)
+
+# Conduct preprocessing of dataset
+data = preprocess(data)
+
+# Create images/plots of data
+fakeCloud(data)
+realCloud(data)
+countWords(data)
+
+# Prepare data for training and testing
+x_train, x_test, y_train, y_test = prepareData(data)
+
+# Execute Classifiers
+logicRegression(x_train, x_test, y_train, y_test)
+decisionTree(x_train, x_test, y_train, y_test)
+randomForest(x_train, x_test, y_train, y_test)
