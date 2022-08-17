@@ -9,14 +9,7 @@ import spacy            # text preprocessing utility
 import re               # regex ops utility
 import html             # for the resolution of HTML entities
 import emoji            # for conversion of emojis
-import pandas as pd     # for the formatting/reading of data
-
-def data_reading(input):
-    print(input)
-    input.drop(columns=['id'])
-    print(input)
-    
-    
+import pandas as pd     # for the formatting/reading of data   
 
 def twitter_cleaning(input):
     """ This function prepares the input for preprocessing by removing Twitter specific
@@ -42,8 +35,12 @@ def twitter_cleaning(input):
 
     ## Switching Emojis to their descriptions
     rememoji = emoji.demojize(remhash)
+    
+    ## Removing '???' occurences
+    remqmarks = rememoji.replace('???', '')
+    remqmarks = remqmarks.replace('??', '')
 
-    return rememoji
+    return remqmarks
 
 def general_cleanup(input):
     """ This function prepares the input for preprocessing by tidying general
@@ -131,9 +128,21 @@ def spacy_preproc(input):
 
 def preprocmain(training, testing):
     """The main function for this program. Controls the I/O and flow of program execution"""
-    training_file = pd.read_csv('./trg_data/'+training)
-    data_reading(training_file)
-    # twitter_cleaned = twitter_cleaning(input_text)
-    # general_cleaned = general_cleanup(twitter_cleaned)
-    # spacy_cleaned = spacy_preproc(general_cleaned)
-    # return spacy_cleaned
+    trg_file = pd.read_csv('./trg_data/'+training)
+    trg_file = trg_file.drop('id', axis=1)
+    print('Beginning Pre-Processing. The dataset size is: '+str(len(trg_file.index)))
+    
+    preproc_dict = {'classifier': [], 'text': []}
+    preproc_data = pd.DataFrame(data=preproc_dict)
+    
+    for index in trg_file.index:
+        print('Text '+str(index)+' starting')
+        twitter_cleaned = twitter_cleaning(trg_file['text'][index])
+        general_cleaned = general_cleanup(twitter_cleaned)
+        spacy_cleaned = spacy_preproc(general_cleaned)
+        cleaned = {'classifier': [trg_file['classifier'][index]], 'text': [spacy_cleaned]}
+        preproc_add = pd.DataFrame(cleaned)
+        preproc_data = pd.concat([preproc_data, preproc_add], sort=False)
+    
+    preproc_data.to_csv('preproc_data.csv', index=False)
+    print(preproc_data)

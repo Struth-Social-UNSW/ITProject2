@@ -35,7 +35,11 @@ def twitter_cleaning(input):
     ## Switching Emojis to their descriptions
     rememoji = emoji.demojize(remhash)
 
-    return rememoji
+    ## Removing '???' occurences
+    remqmarks = rememoji.replace('???', '')
+    remqmarks = remqmarks.replace('??', '')
+
+    return remqmarks
 
 def general_cleanup(input):
     """ This function prepares the input for preprocessing by tidying general
@@ -59,6 +63,8 @@ def general_cleanup(input):
 
     # Cleaning up double spaces created in removal
     remspc = re.sub(' +', ' ', remhtml)
+
+    print(remspc)
 
     return remspc
 

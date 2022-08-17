@@ -12,6 +12,7 @@ __Version__     = 1.0
 from os import getcwd
 from preproc_train import *
 from dl_model_train import *
+from svc_layer_train import *
 import pandas as pd
 import os
 
@@ -23,10 +24,10 @@ def main(train, test):
         train: name of the tsv containing training Tweets from the Kaggle Dataset
         test: name of the tsv containing testing/validation Tweets fromn the Kaggle Dataset
     """
-    preproc_train = preprocmain(train, test)
-    vector = dlmodelmain(preproc)
-    print(vector)
+    preprocmain(train, test)
+    dlmodelmain()
+    #mlmodelmain()
 
 # testing = pd.read_csv('./trg_data/dev.tsv',sep='\t')
 
-main("train.csv", "dev.csv")
+main("test.csv", "dev.csv")

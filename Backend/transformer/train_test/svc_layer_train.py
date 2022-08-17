@@ -13,7 +13,7 @@ import numpy as np
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-
+import pandas as pd
 
 clf = make_pipeline(StandardScaler(), SVC(gamma='auto'))
 
@@ -31,7 +31,17 @@ def testing(feature, label):
         print("Failed")
 
 
-featuresx = np.array([[1,2,3,4,5,6,7,8,9,10], [2,3,4,5,6,7,8,9,10,11], [3,4,5,6,7,8,9,10,11,12], [4,5,6,7,8,9,10,11,12,13]])
-featuresy = np.array([1,0,0,1])
 
-training(featuresx, featuresy)
+
+def mlmodelmain():
+    featuresx = np.array([])
+    featuresy = np.array([])
+    
+    vectors = pd.read_csv('./dl_data.csv')
+    
+    for index in vectors.index:
+        print([vectors['vector'][index]])
+        np.insert(featuresx, 0, ([vectors['vector'][index]]))
+        print(featuresx)
+    
+    training(featuresx, featuresy)

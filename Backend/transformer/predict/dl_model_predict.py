@@ -29,4 +29,5 @@ def dlmodelmain(input):
     out = pipe(input)
     toarr = out[0][0]
     array = numpy.array(toarr)
+    print(array.shape)
     return array

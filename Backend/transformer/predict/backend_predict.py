@@ -9,8 +9,8 @@ __date__        = "13 Aug 22"
 __Version__     = 1.0
 
 # importing utility scripts
-from preproc import *
-from dl_model import *
+from preproc_predict import *
+from dl_model_predict import *
 
 
 def main(input):
@@ -23,4 +23,4 @@ def main(input):
     vector = dlmodelmain(preproc)
     print(vector)
 
-main("If you tested positive for #COVID19 and have no symptoms stay home and away from other people. Learn more about CDCï¿½s recommendations about when you can be around others after COVID-19 infection: https://t.co/z5kkXpqkYb. https://t.co/9PaMy0Rxaf")
+main("india records yet another single-day rise of over 28000 new cases while more than 5.5 lakh individuals have recovered from covid-19. kerala government sets up its first plasma bank in the state following in the steps of delhi and west bengal. #covid19 #coronavirusfacts twitterurl")
