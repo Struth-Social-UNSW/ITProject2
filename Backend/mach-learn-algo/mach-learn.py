@@ -118,6 +118,7 @@ def fakeCloud(dataset):
     plt.figure(figsize=(10,7))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
+    plt.savefig('img_fakeCloud.jpg')
     plt.show()
 
 
@@ -134,6 +135,7 @@ def realCloud(dataset):
     plt.figure(figsize=(10,7))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
+    plt.savefig('img_realCloud.jpg')
     #plt.show()
 
 
@@ -149,6 +151,7 @@ def counter(text, column_text, quantity, token_space):
     ax = sns.barplot(data = df_frequency, x="Word", y = "Frequency", color = 'blue')
     ax.set(ylabel = "Count")
     plt.xticks(rotation = 'vertical')
+    plt.savefig('img_freqWords.jpg')
     plt.show()
 
 
@@ -201,6 +204,7 @@ def plotConfusionMatrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+    plt.savefig('img_confMatrix.jpg')
     plt.show()
 
 
