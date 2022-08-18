@@ -12,18 +12,22 @@ import string
 import nltk
 nltk.download('stopwords')
 import itertools
+import pickle
 
 # Import libraries from scikit learn
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import feature_extraction, linear_model, model_selection, preprocessing
 from sklearn import metrics
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import MultinomialNB
 
 # Import libraries from ntlk
 from nltk.corpus import stopwords
@@ -73,6 +77,9 @@ def preprocess(dataset):
 
     # Remove any unknown or unlabeled rows
     dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
+
+    # Remove any rows with null values 
+    dataset.dropna(inplace = True)
     #print('\nDataset.head: \n', dataset.head())
 
     # Convert to lowercase
@@ -127,7 +134,7 @@ def realCloud(dataset):
     plt.figure(figsize=(10,7))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
-    plt.show()
+    #plt.show()
 
 
 ###  Most frequent words counter  ###
@@ -153,7 +160,7 @@ def countWords(dataset):
     counter(dataset[dataset['target1'] == "fake"], "text", 20, token_space)
 
     # Most frequent words in real news
-    counter(dataset[dataset['target2'] == "true"], "text", 20, token_space)
+    #counter(dataset[dataset['target2'] == "true"], "text", 20, token_space)
 
 
 ###########################################################################
@@ -212,16 +219,55 @@ def dispConfusionMatrix(y_test, predicted):
 ###  Prepare data  ###
 def prepareData(dataset):
     # Divide data for training and testing (currently 80:20 - train:test)
-    #x_train, x_test, y_train, y_test = train_test_split(dataset['text'], lb, test_size = 0.2, random_state = 7)
-
-    # Divide data for training and testing (currently 80:20 - train:test)
     x_train, x_test, y_train, y_test = train_test_split(dataset['text'], dataset['label'], test_size = 0.2, random_state = 42)
+
     return x_train, x_test, y_train, y_test
+    
+
 
 
 ###########################################################################
 
 #####  Classifiers  #####
+
+
+###  Passive Aggressive Classifier  ###
+def passiveAggressive(x_train, x_test, y_train, y_test):
+    # TFIDF-Vectorizor - text array converted to TF-IDF matrix to define importance of keyword
+    # TF (Term Frequency) - number of times a word appears in text
+    # IDF (Inverse Document Frequency) - measure of how significant a work is in the entire data
+    tfidf_vectorizer = TfidfVectorizer(stop_words = 'english', max_df = 0.7)
+    tfidf_train = tfidf_vectorizer.fit_transform(x_train)
+    tfidf_test = tfidf_vectorizer.transform(x_test)
+
+    # Passive Agressive Classifier - is an online learning alogorithm which remains passive for a correct classification and turns aggressive for miscalculations.
+    # It updates loss after each iteration and changes weight vector
+    pipe = PassiveAggressiveClassifier(max_iter = 50)
+
+    # Fitting the model
+    model = pipe.fit(tfidf_train, y_train)
+
+    # Predictions about testing data
+    predicted = model.predict(tfidf_test)
+
+    # Calculate accuracy of model over testing data
+    print('\n*** Passive Aggressive Classifier ***')
+    accuracy(y_test, predicted)
+
+    # Display confusion matrix
+    dispConfusionMatrix(y_test, predicted)
+
+    # Pipeline utility function to train and transform data to text data
+    pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), ('nbmodel', MultinomialNB())])
+    pipeline.fit(x_train, y_train)
+
+    with open('model.pkl', 'wb') as handle:
+        pickle.dump(pipeline, handle, protocol = pickle.HIGHEST_PROTOCOL)
+        
+    with open('model.pkl', 'rb') as handle:
+        model = pickle.load(handle)
+
+    return model
 
 
 ###  Logistic Regression  ###
@@ -243,6 +289,8 @@ def logicRegression(x_train, x_test, y_train, y_test):
 
     # Display confusion matrix
     dispConfusionMatrix(y_test, predicted)
+
+    return model
 
     
 ###  Decision Tree Classifier  ###
@@ -268,6 +316,8 @@ def decisionTree(x_train, x_test, y_train, y_test):
     # Display confusion matrix
     dispConfusionMatrix(y_test, predicted)
 
+    return model
+
 
 ###  Random Forest Classifier  ###
 def randomForest(x_train, x_test, y_train, y_test):
@@ -289,6 +339,8 @@ def randomForest(x_train, x_test, y_train, y_test):
 
     # Display confusion matrix
     dispConfusionMatrix(y_test, predicted)
+
+    return model
 
 
 
@@ -315,6 +367,93 @@ countWords(data)
 x_train, x_test, y_train, y_test = prepareData(data)
 
 # Execute Classifiers
-logicRegression(x_train, x_test, y_train, y_test)
-decisionTree(x_train, x_test, y_train, y_test)
-randomForest(x_train, x_test, y_train, y_test)
+passAggrModel = passiveAggressive(x_train, x_test, y_train, y_test)
+logicRegModel = logicRegression(x_train, x_test, y_train, y_test)
+decTreeModel = decisionTree(x_train, x_test, y_train, y_test)
+randForModel = randomForest(x_train, x_test, y_train, y_test)
+
+
+##  Query Tweet/headline/text for fake news determination
+
+# News article input
+news = 'covid is hoax'
+print('\nNews article reads: ', news, '\n')
+
+# Passive Aggressive Classifier result
+result = passAggrModel.predict([news])
+print('Passive Aggressive result is: ', result[0])
+
+# Logic Regression result
+result = logicRegModel.predict([news])
+print('Logic Regression result is: ', result[0])
+
+# Decision Tree Classifier result
+result = decTreeModel.predict([news])
+print('Decision Tree result is: ', result[0])
+
+# Random Forest Classifier result
+result = randForModel.predict([news])
+print('Random Forest result is: ', result[0])
+
+
+# News article input
+news = 'washing your hands regularly is one of the best ways to prevent the spead of coronavirus'
+print('\nNews article reads: ', news, '\n')
+
+# Passive Aggressive Classifier result
+result = passAggrModel.predict([news])
+print('Passive Aggressive result is: ', result[0])
+
+# Logic Regression result
+result = logicRegModel.predict([news])
+print('Logic Regression result is: ', result[0])
+
+# Decision Tree Classifier result
+result = decTreeModel.predict([news])
+print('Decision Tree result is: ', result[0])
+
+# Random Forest Classifier result
+result = randForModel.predict([news])
+print('Random Forest result is: ', result[0])
+
+
+# News article input
+news = 'The novel coronavirus outbreak has spread to more than 150 countries or territories around the world'
+print('\nNews article reads: ', news, '\n')
+
+# Passive Aggressive Classifier result
+result = passAggrModel.predict([news])
+print('Passive Aggressive result is: ', result[0])
+
+# Logic Regression result
+result = logicRegModel.predict([news])
+print('Logic Regression result is: ', result[0])
+
+# Decision Tree Classifier result
+result = decTreeModel.predict([news])
+print('Decision Tree result is: ', result[0])
+
+# Random Forest Classifier result
+result = randForModel.predict([news])
+print('Random Forest result is: ', result[0])
+
+
+# News article input
+news = 'Coronavirus is only dangerous for old people'
+print('\nNews article reads: ', news, '\n')
+
+# Passive Aggressive Classifier result
+result = passAggrModel.predict([news])
+print('Passive Aggressive result is: ', result[0])
+
+# Logic Regression result
+result = logicRegModel.predict([news])
+print('Logic Regression result is: ', result[0])
+
+# Decision Tree Classifier result
+result = decTreeModel.predict([news])
+print('Decision Tree result is: ', result[0])
+
+# Random Forest Classifier result
+result = randForModel.predict([news])
+print('Random Forest result is: ', result[0])
