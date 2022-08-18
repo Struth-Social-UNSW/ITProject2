@@ -1,6 +1,6 @@
-# This algorithm currently reads data, conducts some training and testing outputing an accuracy level and confusion matrix
-#
-# NOTE: The dataset used must contain true/false labelling
+# This program reads data, conducts ML training and testing, outputing an accuracy level and confusion matrix.
+# 
+# NOTE: The dataset used must contain real/fake labelling
 #
 #
 # Import modules
@@ -118,8 +118,12 @@ def fakeCloud(dataset):
     plt.figure(figsize=(10,7))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
+
+    # Saves word cloud as jpg
     plt.savefig('img_fakeCloud.jpg')
-    plt.show()
+
+    # Displays word cloud to screen
+    #plt.show()
 
 
 ###  Word cloud for REAL news  ###
@@ -135,7 +139,11 @@ def realCloud(dataset):
     plt.figure(figsize=(10,7))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
+
+    # Saves word cloud as jpg
     plt.savefig('img_realCloud.jpg')
+
+    # Displays word cloud to screen
     #plt.show()
 
 
@@ -151,8 +159,12 @@ def counter(text, column_text, quantity, token_space):
     ax = sns.barplot(data = df_frequency, x="Word", y = "Frequency", color = 'blue')
     ax.set(ylabel = "Count")
     plt.xticks(rotation = 'vertical')
+
+    # Saves frequent words table as jpg
     plt.savefig('img_freqWords.jpg')
-    plt.show()
+
+    # Displays frequent words table to screen
+    #plt.show()
 
 
 ###  Count most frequent words in fake and real news  ###
@@ -204,8 +216,12 @@ def plotConfusionMatrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+
+    # Saves confusion matrix as jpg
     plt.savefig('img_confMatrix.jpg')
-    plt.show()
+
+    # Displays confusion matrix to the screen
+    #plt.show()
 
 
 ###   Display Confustion Matrix  ###
@@ -227,8 +243,6 @@ def prepareData(dataset):
 
     return x_train, x_test, y_train, y_test
     
-
-
 
 ###########################################################################
 
@@ -265,9 +279,12 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
     pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), ('nbmodel', MultinomialNB())])
     pipeline.fit(x_train, y_train)
 
+    # Pickling is process where object heirarchy is converted into a byte stream
+    # Serialize an object hierarchy
     with open('model.pkl', 'wb') as handle:
         pickle.dump(pipeline, handle, protocol = pickle.HIGHEST_PROTOCOL)
-        
+    
+    # De-serialize data stream
     with open('model.pkl', 'rb') as handle:
         model = pickle.load(handle)
 
@@ -375,6 +392,7 @@ passAggrModel = passiveAggressive(x_train, x_test, y_train, y_test)
 logicRegModel = logicRegression(x_train, x_test, y_train, y_test)
 decTreeModel = decisionTree(x_train, x_test, y_train, y_test)
 randForModel = randomForest(x_train, x_test, y_train, y_test)
+
 
 
 ##  Query Tweet/headline/text for fake news determination
