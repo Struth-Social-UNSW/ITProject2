@@ -31,7 +31,7 @@ def twitter_cleaning(input):
     remhand = re.sub('@[^\s]+', '', remurl)
 
     ## Removing Hashtags
-    remhash = re.sub('#[^\s]+', '', remhand)
+    remhash = remhand.replace('#', '')
 
     ## Switching Emojis to their descriptions
     rememoji = emoji.demojize(remhash)

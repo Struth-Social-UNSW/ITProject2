@@ -18,6 +18,9 @@ import pandas as pd     # for the formatting/reading of data
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+import sys
+
+np.set_printoptions(threshold=sys.maxsize, suppress=True)
 
 clf = make_pipeline(StandardScaler(), SVC(gamma='auto'))
 
@@ -40,6 +43,7 @@ def mltraining(features, labels):
     y = labels
     print("Beginnning Fit Task")
     clf.fit(X, y)
+    print('Fit success')
     
 def mltesting(feature, label):
     result = clf.predict(feature)
@@ -57,7 +61,7 @@ def dlmodelmain():
         ** Returns **
         N/A
     """
-    preproc = pd.read_csv('./preproc_data.csv')
+    preproc = pd.read_csv('preproc_data.csv')
     dl_dict = {'classifier': [], 'vector': []}
     dl_data = pd.DataFrame(data=dl_dict)
     count = 0
@@ -69,16 +73,31 @@ def dlmodelmain():
     
     for index in preproc.index:
         print('Text '+str(count)+' starting')
-        vector = dlmodel(str(preproc['text'][index]))
-        # print(vector)
-        listfeaturesx.insert(count, list(vector))
-        print(listfeaturesx)
-        vectorised = {'classifier': [preproc['classifier'][index]], 'vector': [vector]}
-        dl_add = pd.DataFrame(vectorised)
-        dl_data = pd.concat([dl_data, dl_add], sort=False)
-        count = count+1
+        print(str(preproc['text'][index]))
+        vector = np.array(dlmodel(str(preproc['text'][index])))
+        featuresx = np.concatenate((featuresx, vector), axis=0)
+        print(np.shape(featuresx))
+        print(featuresx)
+        classifier = np.array([])
+        
+        if str(preproc['classifier'][index]) == 'fake':  
+            classifier = np.append(classifier, [0])
+        elif str(preproc['classifier'][index]) == 'true':  
+            classifier = np.append(classifier, [1])
+            
+        print('Classifier Shape: '+str(np.shape(classifier)))
+        print('featuresy Shape: '+str(np.shape(featuresy)))
+        featuresy = np.concatenate((featuresy, classifier), axis=0)
+        print(featuresy)
+        
+        mltraining(featuresx, featuresy)
+        
+        # vectorised = {'classifier': [preproc['classifier'][index]], 'vector': [vector]}
+        # dl_add = pd.DataFrame(vectorised)
+        # dl_data = pd.concat([dl_data, dl_add], sort=False)
+        # count = count+1
     
-    
+    print(featuresx)
     
     
     
