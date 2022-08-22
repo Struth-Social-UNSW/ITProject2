@@ -40,9 +40,11 @@ def dlmodel(input):
 
 def mltraining(features, labels):
     X = features
+    print(X)
     y = labels
+    print(y)
     print("Beginnning Fit Task")
-    clf.fit(X, y)
+    clf.fit([X], [y])
     print('Fit success')
     
 def mltesting(feature, label):
@@ -70,6 +72,8 @@ def dlmodelmain():
     featuresx = np.array([])
     listfeaturesy = []
     featuresy = np.array([])
+    print(featuresx)
+    print(featuresy)
     
     for index in preproc.index:
         print('Text '+str(count)+' starting')
@@ -81,23 +85,21 @@ def dlmodelmain():
         classifier = np.array([])
         
         if str(preproc['classifier'][index]) == 'fake':  
-            classifier = np.append(classifier, [0])
+            classifier = np.append(classifier, 0)
         elif str(preproc['classifier'][index]) == 'true':  
-            classifier = np.append(classifier, [1])
+            classifier = np.append(classifier, 1)
             
-        print('Classifier Shape: '+str(np.shape(classifier)))
-        print('featuresy Shape: '+str(np.shape(featuresy)))
         featuresy = np.concatenate((featuresy, classifier), axis=0)
         print(featuresy)
-        
-        mltraining(featuresx, featuresy)
         
         # vectorised = {'classifier': [preproc['classifier'][index]], 'vector': [vector]}
         # dl_add = pd.DataFrame(vectorised)
         # dl_data = pd.concat([dl_data, dl_add], sort=False)
-        # count = count+1
+        count = count+1
     
     print(featuresx)
+    print(featuresy)
+    mltraining(featuresx, featuresy)
     
     
     
