@@ -9,10 +9,8 @@ __date__        = "12 Aug 22"
 __Version__     = 1.0
 
 # importing required libraries
-from sre_parse import Tokenizer
 from transformers import pipeline
 import tensorflow as tf
-import json
 import numpy as np
 import pandas as pd     # for the formatting/reading of data
 from sklearn.pipeline import make_pipeline
