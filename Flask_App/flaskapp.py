@@ -1,5 +1,3 @@
-#test push
-#ghdjyck
 # imports
 from flask import Flask, render_template, request
 import testcase
@@ -10,6 +8,7 @@ app = Flask(__name__)
 
 # HOME PAGE routing
 @app.route("/home")
+@app.route("/")
 def home():
     return render_template('home.html')
 
