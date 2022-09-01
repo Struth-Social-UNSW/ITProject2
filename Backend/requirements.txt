@@ -11,3 +11,7 @@ emoji
 unidecode
 cloud-tpu-client
 sentencepiece
+matplotlib
+nltk
+wordcloud
+seaborn
