@@ -373,7 +373,7 @@ def randomForest(x_train, x_test, y_train, y_test):
 
 
 # Dataset source
-dataFile = 'kaggle-covid-news.csv'
+dataFile = './kaggle-covid-news.csv'
 
 # Load and read dataset
 data = read(dataFile)
