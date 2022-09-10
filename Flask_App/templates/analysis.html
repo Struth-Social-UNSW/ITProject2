@@ -31,7 +31,29 @@
 			</div>
 		</div>
 	</nav>
-	<p>Test outputs:{{checkbox}}</p>
-
+	<br>
+	<br>
+<br>
+<table>
+	<!-- Table headers -->
+		<tr style="font-weight:bold">
+			<td width="60%">Tweet</td>
+			<td width="10%">Passive Aggressive Result</td>
+			<td width="10%">Logisitic Regression Result</td>
+			<td width="10%">Decision Tree Result</td>
+			<td width="10%">Random Forest Result</td>
+		</tr>
+		<!-- For loop logic of jinja template -->
+		{%for i in passedTweets%}
+		<!-- table rows -->
+		<tr>
+			<td>{{i[0]}}</td>
+			<td>{{i[1]}}</td>
+			<td>{{i[2]}}</td>
+			<td>{{i[3]}}</td>
+			<td>{{i[4]}}</td>
+		</tr>
+		{%endfor%}
+	</table>
 </body>
 </html>

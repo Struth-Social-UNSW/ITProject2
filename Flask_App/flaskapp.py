@@ -3,8 +3,10 @@ from re import search
 from flask import Flask, render_template, request, redirect, url_for, session
 import testcase
 import tweepy_wrapper
+import machLearn
 
 app = Flask(__name__)
+app.secret_key = 'struthSocialFakeNewsDetection'
 
 
 # HOME PAGE routing
@@ -16,9 +18,11 @@ def home():
 # for passing variables from form to script
 @app.route('/', methods=['POST'])
 def webapp():
-    searchInput = request.form['searchInput']
-    prediction = testcase.test(searchInput)
-    return render_template('home.html', searchInput=searchInput, result=prediction)
+
+    searchInput = []
+    searchInput.append(request.form['searchInput'])
+    session['selectedTweets'] = searchInput
+    return redirect("analysis", code=302)
 
 
 # ABOUT PAGE routing
@@ -42,20 +46,23 @@ def handle():
         tweets = tweepy_wrapper.RecentTweetsWrapper(searchTopic)
         return render_template('twitter.html', tweets=tweets, searchTopic=searchTopic)
     elif request.form['Submit'] == 'analyse':
-        # people = request.form.getlist('people')
         print('helloworld2')
+        session['selectedTweets'] = request.form.getlist('tweet')
         for checkbox in request.form.getlist('tweet'):
             print(checkbox)
+            
         return redirect("analysis", code=302)
-        # return redirect(url_for('analysis', checkbox=checkbox, **request.args))
-        # session['checkbox'] = checkbox
-        # return redirect(url_for('analysis', checkbox=checkbox))
-
 
 # Analysis PAGE routing
 @app.route("/analysis")
 def analysis():
-    return render_template('analysis.html')
+    array=session.get('selectedTweets', None)
+    passedTweets = []
+    temparr = machLearn.Main(array)
+    passedTweets = temparr
+    print('helloworld3')
+    print(temparr)
+    return render_template('analysis.html', passedTweets = passedTweets)
 
 # Running app, debug mode can be changed here
 if __name__ == '__main__':
