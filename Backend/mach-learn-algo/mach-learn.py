@@ -164,7 +164,7 @@ def counter(text, column_text, quantity, token_space):
     plt.savefig('img_freqWords.jpg')
 
     # Displays frequent words table to screen
-    #plt.show()
+    plt.show()
 
 
 ###  Count most frequent words in fake and real news  ###
@@ -194,7 +194,7 @@ def plotConfusionMatrix(cm, classes,
                             normalize = False,
                             title = 'Confusion matrix', 
                             cmap = plt.cm.Blues):
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.imshow(cm, interpolation = 'nearest', cmap = cmap)
     plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
@@ -221,14 +221,14 @@ def plotConfusionMatrix(cm, classes,
     plt.savefig('img_confMatrix.jpg')
 
     # Displays confusion matrix to the screen
-    #plt.show()
+    plt.show()
 
 
 ###   Display Confustion Matrix  ###
 def dispConfusionMatrix(y_test, predicted):
     print(metrics.confusion_matrix(y_test, predicted))
     cm = metrics.confusion_matrix(y_test, predicted)
-    plotConfusionMatrix(cm, classes=['Fake', 'True'])
+    plotConfusionMatrix(cm, classes=['Fake', 'True'])  ## Uncomment this line to save/display confusion matrix
 
 
 ###########################################################################
@@ -260,10 +260,12 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
 
     # Passive Agressive Classifier - is an online learning alogorithm which remains passive for a correct classification and turns aggressive for miscalculations.
     # It updates loss after each iteration and changes weight vector
-    pipe = PassiveAggressiveClassifier(max_iter = 50)
+    #pipe = PassiveAggressiveClassifier(max_iter = 50)
+    model = PassiveAggressiveClassifier(max_iter = 50)
 
     # Fitting the model
-    model = pipe.fit(tfidf_train, y_train)
+    #model = pipe.fit(tfidf_train, y_train)
+    model.fit(tfidf_train, y_train)
 
     # Predictions about testing data
     predicted = model.predict(tfidf_test)
