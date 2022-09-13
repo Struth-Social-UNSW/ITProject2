@@ -2,9 +2,13 @@
 ###This uses tweepy-
 import tweepy
 
+# Read Twitter API key from the private key file
+with open('./TwitterApiKey.txt', 'r') as TwitterApiKeyFile:
+    APIkey = TwitterApiKeyFile.readline()
+
 
 def RecentTweetsWrapper(Query: str):
-    bearer_token = "AAAAAAAAAAAAAAAAAAAAAAczfgEAAAAAFpSw8BTNqunJaoVY6hdveuPInMM%3Dx09FECpMed9Zo0KCtD01KHrCWlmUvsUNPX1Yx6ot0ktghQi7U3"
+    bearer_token = str(APIkey)
 
     client = tweepy.Client(bearer_token)
 
@@ -37,7 +41,7 @@ def RecentTweetsWrapper(Query: str):
 
 
 def ResolveAuthorUsernameFromID(ID):
-    bearer_token = "AAAAAAAAAAAAAAAAAAAAAAczfgEAAAAAFpSw8BTNqunJaoVY6hdveuPInMM%3Dx09FECpMed9Zo0KCtD01KHrCWlmUvsUNPX1Yx6ot0ktghQi7U3"
+    bearer_token = str(APIkey)
 
     client = tweepy.Client(bearer_token)
 
