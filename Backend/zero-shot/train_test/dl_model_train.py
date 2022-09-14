@@ -47,38 +47,7 @@ def dlmodelmain():
     dl_data = pd.DataFrame(data=dl_dict)
     count = 0
     
-    listfeaturesx = []
-    featuresx = np.array([])
-    listfeaturesy = []
-    featuresy = np.array([])
-    print(featuresx)
-    print(featuresy)
     
-    for index in preproc.index:
-        print('Text '+str(count)+' starting')
-        print(str(preproc['text'][index]))
-        vector = np.array(dlmodel(str(preproc['text'][index])))
-        featuresx = np.concatenate((featuresx, vector), axis=0)
-        print(np.shape(featuresx))
-        print(featuresx)
-        classifier = np.array([])
-        
-        if str(preproc['classifier'][index]) == 'fake':  
-            classifier = np.append(classifier, 0)
-        elif str(preproc['classifier'][index]) == 'true':  
-            classifier = np.append(classifier, 1)
-            
-        featuresy = np.concatenate((featuresy, classifier), axis=0)
-        print(featuresy)
-        
-        # vectorised = {'classifier': [preproc['classifier'][index]], 'vector': [vector]}
-        # dl_add = pd.DataFrame(vectorised)
-        # dl_data = pd.concat([dl_data, dl_add], sort=False)
-        count = count+1
-    
-    print(featuresx)
-    print(featuresy)
-    mltraining(featuresx, featuresy)
     
     
     
