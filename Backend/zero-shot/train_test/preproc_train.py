@@ -115,26 +115,41 @@ def spacy_preproc(input):
     #     if str(token) == '&':
     #         stopwords_rem.remove(token)
 
-    # creating a list of lemmatised tokens from the sentence
-    lemma_text = []
+    # # creating a list of lemmatised tokens from the sentence
+    # lemma_text = []
 
-    # adds lemmatised version of all words (if applicable) into a final list, ready for the model
+    # # adds lemmatised version of all words (if applicable) into a final list, ready for the model
+    # for word in token_list:
+    #     lemma_text.append(word.lemma_)
+    
+    # # creating a list of lemmatised tokens from the sentence
+    final_text = []
+    
+    # adds coverts tokens back into str, then adds into a final list, ready for the model
     for word in token_list:
-        lemma_text.append(word.lemma_)
+        final_text.append(str(word))
 
-    preproc_str = ' '.join(lemma_text)
+    preproc_str = ' '.join(final_text)
 
     return preproc_str
 
 def preprocmain(training, testing):
     """The main function for this program. Controls the I/O and flow of program execution"""
     trg_file = pd.read_csv('./trg_data/'+training)
+    print('Printing TRG file')
+    print(trg_file)
     trg_file = trg_file.drop('id', axis=1)
-    print('Beginning Pre-Processing. The dataset size is: '+str(len(trg_file.index)))
+    test_file = pd.read_csv('./trg_data/'+testing)
+    print('Printing TEST file')
+    print(test_file)
+    test_file = test_file.drop('id', axis=1)
+    print('Beginning Pre-Processing. The test dataset size is: '+str(len(trg_file.index))+' and the training dataset size is: '+str(len(test_file.index)))
     
     preproc_dict = {'classifier': [], 'text': []}
-    preproc_data = pd.DataFrame(data=preproc_dict)
+    preproc_data_train = pd.DataFrame(data=preproc_dict)
+    preproc_data_test = pd.DataFrame(data=preproc_dict)
     
+    # Running preprocessing for the training data
     for index in trg_file.index:
         print('Text '+str(index)+' starting')
         twitter_cleaned = twitter_cleaning(trg_file['text'][index])
@@ -142,7 +157,22 @@ def preprocmain(training, testing):
         spacy_cleaned = spacy_preproc(general_cleaned)
         cleaned = {'classifier': [trg_file['classifier'][index]], 'text': [spacy_cleaned]}
         preproc_add = pd.DataFrame(cleaned)
-        preproc_data = pd.concat([preproc_data, preproc_add], sort=False)
+        preproc_data_train_up = pd.concat([preproc_data_train, preproc_add], sort=False)
+        preproc_data_train = preproc_data_train_up
+        
+    # Running preprocessing for the testing data
+    for index in test_file.index:
+        print('Text '+str(index)+' starting')
+        twitter_cleaned = twitter_cleaning(test_file['text'][index])
+        general_cleaned = general_cleanup(twitter_cleaned)
+        spacy_cleaned = spacy_preproc(general_cleaned)
+        cleaned = {'classifier': [test_file['classifier'][index]], 'text': [spacy_cleaned]}
+        preproc_add = pd.DataFrame(cleaned)
+        preproc_data_test_up = pd.concat([preproc_data_test, preproc_add], sort=False)
+        preproc_data_test = preproc_data_test_up
     
-    preproc_data.to_csv('preproc_data.csv', index=False)
-    print(preproc_data)
+    preproc_data_train.to_csv('preproc_data_train.csv', index=False)
+    print(preproc_data_train)
+    
+    preproc_data_test.to_csv('preproc_data_test.csv', index=False)
+    print(preproc_data_test)

@@ -18,10 +18,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 import sys
 
-np.set_printoptions(threshold=sys.maxsize, suppress=True)
-
-clf = make_pipeline(StandardScaler(), SVC(gamma='auto'))
-
 def dlmodel(input):
     """ This function contains the model which takes in a string or list of strings and performs an analysis of that text
 
@@ -31,26 +27,11 @@ def dlmodel(input):
         ** Returns **
         A many dimensional vector modelling the features of the text, as per the pretraining of the model
     """
-    pipe = pipeline(task='feature-extraction', model='digitalepidemiologylab/covid-twitter-bert-v2')
-    out = pipe(input)
-    array = out[0][0]
-    return array
-
-def mltraining(features, labels):
-    X = features
-    print(X)
-    y = labels
-    print(y)
-    print("Beginnning Fit Task")
-    clf.fit([X], [y])
-    print('Fit success')
-    
-def mltesting(feature, label):
-    result = clf.predict(feature)
-    if result == label:
-        print('Success')
-    else:
-        print("Failed")
+    pipe = pipeline("zero-shot-classification", model="digitalepidemiologylab/covid-twitter-bert-v2-mnli")    
+    fake_real = ['fake', 'real']
+    statement = 'This example is {}.'
+    result = pipe(input, fake_real, hypothesis_template=statement, multi_label=True)
+    return result
 
 def dlmodelmain():
     """ This function contains the model which takes in a string or list of strings and performs an analysis of that text
