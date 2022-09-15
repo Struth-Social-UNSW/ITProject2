@@ -4,6 +4,9 @@
 #
 #
 # Import modules
+from asyncio.windows_utils import pipe
+#from statistics import LinearRegression, mean
+from tkinter import Y
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -18,13 +21,17 @@ import pickle
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn import datasets
 from sklearn import feature_extraction, linear_model, model_selection, preprocessing
-from sklearn import metrics, datasets
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn import metrics, svm
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, confusion_matrix
-from sklearn.model_selection import train_test_split, KFold, cross_val_score
-from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split, KFold, cross_val_score, StratifiedKFold
+from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
@@ -231,17 +238,6 @@ def dispConfusionMatrix(y_test, predicted):
     plotConfusionMatrix(cm, classes=['Fake', 'True'])  ## Uncomment this line to save/display confusion matrix
 
 
-###   K-Fold Cross Validation
-def crossVal(model, dataset):
-    kFolds = KFold(n_splits = 5)
-    x = dataset.data
-    y = dataset.target
-    scores = cross_val_score(model, dataset, cv = kFolds)
-    print('Cross Validation Scores: ', scores)
-    print('Average CV Score: ', scores.mean())
-    print('Number of CV Scores used in Average: ', len(scores))
-
-
 ###########################################################################
 
 #####  Data Preparation  #####
@@ -261,7 +257,7 @@ def prepareData(dataset):
 
 
 ###  Passive Aggressive Classifier  ###
-def passiveAggressive(dataset, x_train, x_test, y_train, y_test):
+def passiveAggressive(x_train, x_test, y_train, y_test):
     # TFIDF-Vectorizor - text array converted to TF-IDF matrix to define importance of keyword
     # TF (Term Frequency) - number of times a word appears in text
     # IDF (Inverse Document Frequency) - measure of how significant a work is in the entire data
@@ -284,9 +280,6 @@ def passiveAggressive(dataset, x_train, x_test, y_train, y_test):
     # Calculate accuracy of model over testing data
     print('\n*** Passive Aggressive Classifier ***')
     accuracy(y_test, predicted)
-
-    # Conduct Cross Validation
-    crossVal(model, dataset)
 
     # Display confusion matrix
     dispConfusionMatrix(y_test, predicted)
@@ -404,7 +397,7 @@ countWords(data)
 x_train, x_test, y_train, y_test = prepareData(data)
 
 # Execute Classifiers
-passAggrModel = passiveAggressive(data, x_train, x_test, y_train, y_test)
+passAggrModel = passiveAggressive(x_train, x_test, y_train, y_test)
 logicRegModel = logicRegression(x_train, x_test, y_train, y_test)
 decTreeModel = decisionTree(x_train, x_test, y_train, y_test)
 randForModel = randomForest(x_train, x_test, y_train, y_test)
