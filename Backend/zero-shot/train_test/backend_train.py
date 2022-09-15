@@ -22,7 +22,7 @@ def main(train, test):
         train: name of the tsv containing training Tweets from the Kaggle Dataset
         test: name of the tsv containing testing/validation Tweets fromn the Kaggle Dataset
     """
-    preprocmain(train, test)
+    # preprocmain(train, test)
     dlmodelmain()
 
-main("train.csv", "test.csv")
+main("train.csv", "dev.csv")
