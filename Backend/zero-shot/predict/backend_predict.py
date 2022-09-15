@@ -23,4 +23,4 @@ def main(input):
     result = dlmodelmain(preproc)
     print(result)
 
-main("Chinese converting to Islam after realising that no muslim was affected by #Coronavirus #COVD19 in the country")
+main("COVID is a hoax")
