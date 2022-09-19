@@ -1,4 +1,4 @@
-id,classifier,text
+id,label,text
 1,real,the cdc currently reports 99031 deaths. in general the discrepancies in death counts between different sources are small and explicable. the death toll stands at roughly 100000 people today.
 2,real,states reported 1121 deaths a small rise from last tuesday. southern states reported 640 of those deaths. twitterurl
 3,fake,politically correct woman (almost) uses pandemic as excuse not to reuse plastic bag twitterurl #coronavirus #nashville
