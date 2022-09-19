@@ -18,11 +18,15 @@ def dlmodelmain(input):
         input: a str containing the body of a Tweet (after being preprocessed)
 
         ** Returns **
-        A many dimensional vector modelling the features of the text, as per the pretraining of the model
+        label: a str (either fake or real) based on the model's classification
+        score: the score (certainty) of correctness from the model
     """
     pipe = pipeline("text-classification", model="../train_test/finetuned_model", tokenizer="digitalepidemiologylab/covid-twitter-bert-v2")
     result = pipe(input)
-    print(result)
-    return result
-
-dlmodelmain("Florida Governor Ron DeSantis Botches COVID-19 Response - By banning Corona beer in order to flatten pandemic curve.")
+    resultdict = result[0]
+    label = resultdict['label']
+    score = resultdict['score']
+    print("** Results **")
+    print("Determination: "+label)
+    print("Certainty: "+str(score))      
+    return label, score

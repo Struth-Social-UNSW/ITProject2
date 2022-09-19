@@ -65,8 +65,6 @@ def general_cleanup(input):
     # Cleaning up double spaces created in removal
     remspc = re.sub(' +', ' ', remhtml)
 
-    print(remspc)
-
     return remspc
 
 def spacy_preproc(input):
@@ -136,7 +134,14 @@ def spacy_preproc(input):
     return preproc_str
 
 def preprocmain(input_text):
-    """The main function for this program. Controls the I/O and flow of program execution"""
+    """The main function for this program. Controls the I/O and flow of program execution
+    
+        ** Parameters **
+        input_text: a str containing the body of a Tweet
+
+        ** Returns **
+        spacy_cleaned: A string object of the preprocessed original Tweet
+    """
     twitter_cleaned = twitter_cleaning(input_text)
     general_cleaned = general_cleanup(twitter_cleaned)
     spacy_cleaned = spacy_preproc(general_cleaned)

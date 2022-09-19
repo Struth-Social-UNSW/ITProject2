@@ -18,9 +18,13 @@ def main(input):
         
         ** Parameters **
         input: a str containing the body of a Tweet
+        
+        ** Returns **
+        result: a list containing the classification of the text and accuracy
     """
     preproc = preprocmain(input)
     result = dlmodelmain(preproc)
     print(result)
+    return(result)
 
-main("COVID is a hoax")
+main("The coronavirus pandemic has forced Florida racing tracks to close, and 1,500 greyhounds are now looking for homes")
