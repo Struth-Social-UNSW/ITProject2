@@ -11,9 +11,7 @@ __Version__     = 1.0
 # importing required libraries
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer, DataCollatorWithPadding
 from datasets import load_dataset, load_metric
-import tensorflow as tf
 import numpy as np
-import pandas as pd     # for the formatting/reading of data
 
 tokenizer = AutoTokenizer.from_pretrained("digitalepidemiologylab/covid-twitter-bert-v2", model_max_length=128) 
 metric = load_metric('accuracy')
@@ -22,47 +20,67 @@ training_args = ""
 trainer = ""
 token_train = []
 token_test = []
-
     
 def tokenize_function(examples):
+    """ This function tokenizes the preprocessed Tweets for training/validation on the DL model
+
+        ** Parameters **
+        examples: a str being the preprocesed Tweet
+        
+        ** Returns **
+        tokenizer object: a list of integers representing token IDs
+    """
     return tokenizer(examples["text"], padding="max_length", truncation=True)
 
 def prep():
-    dataset = load_dataset('csv', data_files={'train': './train_dl_num.csv', 'test': './dev_dl_num.csv'})
-    print(len(dataset))
-    print(dataset['train'][1])
+    """ This reads the procesed Tweets, handles their tokenization and prepares
+        them for the training task
+
+        ** Parameters **
+        N/A
+        
+        ** Returns **
+        N/A
+    """
+    dataset = load_dataset('csv', data_files={'train': './preproc_data_train.csv', 'test': './preproc_data_test.csv'})   # loads the preprocessed files 
+    print("The size of the preprocessed dataset is: "+str(len(dataset)))
     
-    tokens = dataset.map(tokenize_function, batched=True)
+    tokens = dataset.map(tokenize_function, batched=True)   # tokenizes the preprocessed examples
     
     global token_train
-    token_train = tokens['train'].shuffle(seed=42).select(range(100)) 
+    token_train = tokens['train']   # on tokenization completion, creates separate lists for train and test values
     global token_test
-    token_test = tokens['test'].shuffle(seed=42).select(range(100)) 
-    
-    print(token_test[1])
+    token_test = tokens['test']
 
 def compute_metrics(eval_pred):
+    """ This method provides metrics for the training and testing tasks
+
+        ** Parameters **
+        eval_pred: dataset from that instance of training (usually an epoch worth)
+        
+        ** Returns **
+        metric object: A dict object containing calculated loss (training and evaluation) as well as other metrics and the epoch number
+    """
     logits, labels = eval_pred
     predictions = np.argmax(logits, axis=-1)
     return metric.compute(predictions=predictions, references=labels)
 
-def dlmodel(input):
-    """ This function contains the model which takes in a string or list of strings and performs an analysis of that text
+def finetune():
+    """ This method conducts the finetuning task on the model.
+    
+        Begins by defining training arguments (hyperparameters) for the training task. The trainer is then defined as a class, and
+        key variables are defined within the class declaration.
+        
+        Finally, the training task is run, an evaluation is conducted and then the newly produced model is saved.
 
         ** Parameters **
-        input: a str containing the body of a Tweet (after being preprocessed)
-
+        N/A
+        
         ** Returns **
-        A many dimensional vector modelling the features of the text, as per the pretraining of the model
+        N/A
     """
-    pipe = pipeline("zero-shot-classification", model="digitalepidemiologylab/covid-twitter-bert-v2")    
-    fake_real = ['fake', 'real']
-    statement = 'This example is {}.'
-    result = pipe(input, fake_real, hypothesis_template=statement, multi_label=True)
-    return result
-
-def finetune():
-    model = AutoModelForSequenceClassification.from_pretrained("digitalepidemiologylab/covid-twitter-bert-v2", num_labels=2)
+    model = AutoModelForSequenceClassification.from_pretrained("digitalepidemiologylab/covid-twitter-bert-v2", num_labels=2)    # importing the model for finetuning
+    # declaration of args (hyperparameters) for finetuning the model
     training_args = TrainingArguments(
         evaluation_strategy="epoch",
         output_dir="./results",
@@ -73,6 +91,7 @@ def finetune():
         weight_decay=0.01,
     )
     
+    # declaration of the Trainer class for finetuning
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -81,28 +100,18 @@ def finetune():
         compute_metrics=compute_metrics,
     ) 
     
+    # training, evaluation and saving of the finetuned model
     trainer.train()
     trainer.evaluate()
     trainer.save_model("finetuned_model")
 
-def rewritelabels():
-    trg_file = pd.read_csv('./trg_data/train_dl.csv')
-    print('Printing TRG file before change')
-    print(trg_file)
-    trg_file['label'] = trg_file['label'].replace(['real','fake'],[0,1])
-    print(trg_file)
-    test_file = pd.read_csv('./trg_data/dev_dl.csv')
-    print('Printing TEST file before change')
-    print(test_file)
-    test_file['label'] = test_file['label'].replace(['real','fake'],[0,1])
-    print(test_file)
-    
-    trg_file.to_csv('train_dl_num.csv', index=False)
-    test_file.to_csv("dev_dl_num.csv", index=False)
-
-
 def dlmodelmain():
-    """ This function contains the model which takes in a string or list of strings and performs an analysis of that text
+    """ This function drives the dl_model_train.py script to conduct the required tasks
+    
+        Firstly, the data is prepared for finetuning. After preparation is complete, control is handed off to the
+        finetune method for further work.
+        
+        When the finetuning is complete, the newly created model is output to the specified directory.
 
         ** Parameters **
         N/A
@@ -110,11 +119,7 @@ def dlmodelmain():
         ** Returns **
         N/A
     """
-    # print('Rewriting label values')
-    # rewritelabels()
-    print("Beginning prep tasks")
     prep()
-    print("Beginning finetune tasks")
     finetune()
     
     
