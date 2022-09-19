@@ -1,8 +1,8 @@
-"""preproc.py: This program provides the preprocessing facility for the Fake News Detection DL model and subsequent ML models."""
+"""preproc.py: This program provides the preprocessing facility for the Fake News Detection DL model."""
 
 __author__      = "Breydon Verryt-Reid"
-__date__        = "12 Aug 22"
-__Version__     = 1.0
+__date__        = "19 Sep 22"
+__Version__     = 2.0
 
 # file imports for required libraries
 import spacy            # text preprocessing utility
@@ -10,6 +10,28 @@ import re               # regex ops utility
 import html             # for the resolution of HTML entities
 import emoji            # for conversion of emojis
 import pandas as pd     # for the formatting/reading of data   
+
+def rewritelabels(train, test):
+    """ This function prepares the input for the deep learning model by encoding the labels
+        in a binary manner
+            -real is 0
+            -fake is 1
+        
+        On completion of the encoding, the file is output and now ready for further preprocessing
+
+        ** Parameters **
+        train: a str being the name of the training file
+        test: a str being the name of the testing/validation file
+    """
+    trg_file = pd.read_csv('./trg_data/'+train) # reading the trg file for encoding
+    print('Printing TRG file before change')
+    trg_file['label'] = trg_file['label'].replace(['real','fake'],[0,1])
+    test_file = pd.read_csv('./trg_data/'+test) # reading the testing file for encoding
+    print('Printing TEST file before change')
+    test_file['label'] = test_file['label'].replace(['real','fake'],[0,1])
+    
+    trg_file.to_csv('./trg_data/train_num.csv', index=False)    # saving both train and test files after encoding
+    test_file.to_csv("./trg_data/dev_num.csv", index=False)
 
 def twitter_cleaning(input):
     """ This function prepares the input for preprocessing by removing Twitter specific
@@ -73,8 +95,7 @@ def spacy_preproc(input):
         This exchanges the string values into tokens which can be used again by spaCy.
 
         Excess spaces are then removed and colons removed. The colons appear from the conversion
-        of emojis to text representation. Finally, the tokens are lemmatised before they are
-        output as str objects to a new list.
+        of emojis to text representation. Finally, the tokens are output as str objects to a new list.
 
         ** Parameters **
         input: a str containing the body of a Tweet
@@ -135,16 +156,18 @@ def spacy_preproc(input):
 
 def preprocmain(training, testing):
     """The main function for this program. Controls the I/O and flow of program execution"""
-    trg_file = pd.read_csv('./trg_data/'+training)
-    print('Printing TRG file')
-    print(trg_file)
+    
+    # Encoding activity to prepare for DL training
+    rewritelabels(training, testing)
+    
+    # Drops the ID axis from the dataframe, not required for DL tasks
+    trg_file = pd.read_csv('./trg_data/train_num.csv')
     trg_file = trg_file.drop('id', axis=1)
-    test_file = pd.read_csv('./trg_data/'+testing)
-    print('Printing TEST file')
-    print(test_file)
+    test_file = pd.read_csv('./trg_data/dev_num.csv')
     test_file = test_file.drop('id', axis=1)
     print('Beginning Pre-Processing. The test dataset size is: '+str(len(trg_file.index))+' and the training dataset size is: '+str(len(test_file.index)))
     
+    # Establishing the DF for output of preprocessed Tweets
     preproc_dict = {'classifier': [], 'text': []}
     preproc_data_train = pd.DataFrame(data=preproc_dict)
     preproc_data_test = pd.DataFrame(data=preproc_dict)
@@ -155,10 +178,10 @@ def preprocmain(training, testing):
         twitter_cleaned = twitter_cleaning(trg_file['text'][index])
         general_cleaned = general_cleanup(twitter_cleaned)
         spacy_cleaned = spacy_preproc(general_cleaned)
-        cleaned = {'classifier': [trg_file['classifier'][index]], 'text': [spacy_cleaned]}
+        cleaned = {'label': [trg_file['label'][index]], 'text': [spacy_cleaned]}    # creates a new Dict object containing the preprocessed Tweet
         preproc_add = pd.DataFrame(cleaned)
         preproc_data_train_up = pd.concat([preproc_data_train, preproc_add], sort=False)
-        preproc_data_train = preproc_data_train_up
+        preproc_data_train = preproc_data_train_up  # updates the dataframe with the newly preprocessed Tweet
         
     # Running preprocessing for the testing data
     for index in test_file.index:
@@ -166,13 +189,13 @@ def preprocmain(training, testing):
         twitter_cleaned = twitter_cleaning(test_file['text'][index])
         general_cleaned = general_cleanup(twitter_cleaned)
         spacy_cleaned = spacy_preproc(general_cleaned)
-        cleaned = {'classifier': [test_file['classifier'][index]], 'text': [spacy_cleaned]}
+        cleaned = {'classifier': [test_file['classifier'][index]], 'text': [spacy_cleaned]} # creates a new Dict object containing the preprocessed Tweet
         preproc_add = pd.DataFrame(cleaned)
         preproc_data_test_up = pd.concat([preproc_data_test, preproc_add], sort=False)
-        preproc_data_test = preproc_data_test_up
+        preproc_data_test = preproc_data_test_up    # updates the dataframe with the newly preprocessed Tweet
     
-    preproc_data_train.to_csv('preproc_data_train.csv', index=False)
+    preproc_data_train.to_csv('./trg_data/preproc_data_train.csv', index=False)
     print(preproc_data_train)
     
-    preproc_data_test.to_csv('preproc_data_test.csv', index=False)
+    preproc_data_test.to_csv('./trg_data/preproc_data_test.csv', index=False)
     print(preproc_data_test)
