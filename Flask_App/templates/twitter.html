@@ -12,10 +12,24 @@
 			width:100%;
 			border-spacing: 30px;
 		}
-		tr,td {
+		table.table1 tr, table.table1 td {
+  			padding:10px;
+			border-bottom: 1px solid #ddd;
+		}
+		table.table2 tr, table.table2 td {
   			padding:10px;
 		}
 	</style>
+	<script>
+		function toggle(source) {
+			var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+			for (var i = 0; i < checkboxes.length; i++) {
+				if (checkboxes[i] != source)
+					checkboxes[i].checked = source.checked;
+			}
+		}
+	</script>
+
 </head>
 <body>
 <!--Nav Bar-->
@@ -31,26 +45,31 @@
 			</div>
 		</div>
 	</nav>
+
 <!--	form for text input-->
 	<div class='container'>
 		<form action="{{ url_for('twitter') }}" method="POST">
 			<div class="col-three-forth text-center col-md-offset-2">
 				<div class="form-group">
+					<br>
+					<p>Enter a term below to search Twitter:</p>
 					<input type="text" class="form-control jTextarea mt-3" id="jTextarea'" rows="1" name="searchTopic"
 					 placeholder="Enter your text here..." required></input>
-					<br><br>
+					<br>
 					<button class="btn btn-primary btn-outline btn-md" type="submit" name="Submit" value="search">Search</button>
 				</div>
 			</div>
 		</form>
 	</div>
-<br>
+	<br>	
+
+{% if divShown == True %}
 <!--	table to print results-->
 	<div class='container'>
 		<p><b>Warning!</b> To minimise inaccuracies, this application provides no content filtering</p>
 		<p>Latest Tweets for: <b>{{searchTopic}}</b></p>
 		<form action="{{ url_for('twitter') }}" method="POST">
-		<table>
+		<table class="table1">
 		<!-- Table headers -->
 			<tr style="font-weight:bold">
 				<td width="15%">Author</td>
@@ -64,14 +83,30 @@
 			<tr>
 				<td>{{i[2]}}</td>
 				<td>{{i[1]}}</td>
-				<td style="text-align:center;"><input class="form-check-input" type="checkbox" name="tweet" id="inlineCheckbox1" value="{{i[1]}}"></td>
+				<td style="text-align:left;"><input class="form-check-input" type="checkbox" name="tweet" id="inlineCheckbox1" value="{{i[1]}}"></td>
 			</tr>
 			{%endfor%}
 		</table>
-		<button class="btn btn-primary btn-outline btn-md" type="submit" name="Submit" value="analyse">Analyse</button>
+		<table class="table2">
+			<tr>
+				<td width="15%"></td>
+				<td width="70%"></td>
+				<td style="text-align:left;"><input class="form-check-input" type="checkbox" onClick="toggle(this)" /> Select All?<br/></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td><button class="btn btn-primary btn-outline btn-md" type="submit" name="Submit" value="analyse">Analyse</button></td>
+			</tr>
+		</table>
 		</form>
 	</div>
 <br><br><br><br>
-
+{% endif %}
 </body>
 </html>

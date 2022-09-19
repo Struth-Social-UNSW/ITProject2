@@ -73,9 +73,9 @@ def preprocess(dataset):
     countFalse = dataset['label'].value_counts('false')
     print(countFalse)
 
-    # Add flag to track fake and real articles
-    dataset['target1'] = 'fake'
-    dataset['target2'] = 'true'
+    # Add flag to track fake and real articles if separate datasets, then merge the datasets
+    #dataset['target1'] = 'fake'
+    #dataset['target2'] = 'true'
 
     # Remove any unknown or unlabeled rows
     dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
@@ -109,7 +109,8 @@ def preprocess(dataset):
 
 ###  Word cloud for FAKE news  ###
 def fakeCloud(dataset):
-    fake_data = dataset[dataset["target1"] == "fake"]
+    #fake_data = dataset[dataset["target1"] == "fake"]
+    fake_data = dataset[dataset["label"] == "fake"]
     all_words = ' '.join([text for text in fake_data.text])
 
     wordcloud = WordCloud(width = 800,
@@ -130,7 +131,8 @@ def fakeCloud(dataset):
 
 ###  Word cloud for REAL news  ###
 def realCloud(dataset):
-    real_data = dataset[dataset["target2"] == "true"]
+    #real_data = dataset[dataset["target2"] == "true"]
+    real_data = dataset[dataset["label"] == "real"]
     all_words = ' '.join([text for text in real_data.text])
 
     wordcloud = WordCloud(width = 800,
@@ -166,7 +168,7 @@ def counter(text, column_text, quantity, token_space):
     plt.savefig('img_freqWords.jpg')
 
     # Displays frequent words table to screen
-    # plt.show()
+    #plt.show()
 
 
 ###  Count most frequent words in fake and real news  ###
@@ -174,7 +176,7 @@ def countWords(dataset):
     token_space = tokenize.WhitespaceTokenizer()
 
     # Most frequent words in fake news
-    counter(dataset[dataset['target1'] == "fake"], "text", 20, token_space)
+    counter(dataset[dataset['label'] == "fake"], "text", 20, token_space)
 
     # Most frequent words in real news
     #counter(dataset[dataset['target2'] == "true"], "text", 20, token_space)
@@ -223,7 +225,8 @@ def plotConfusionMatrix(cm, classes,
     plt.savefig('img_confMatrix.jpg')
 
     # Displays confusion matrix to the screen
-    # plt.show()
+    #plt.show()
+    plt.close()
 
 
 ###   Display Confustion Matrix  ###

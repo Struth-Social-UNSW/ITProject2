@@ -222,6 +222,7 @@ def plotConfusionMatrix(cm, classes,
 
     # Displays confusion matrix to the screen
     plt.show()
+    plt.close()
 
 
 ###   Display Confustion Matrix  ###

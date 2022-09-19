@@ -1,7 +1,6 @@
 # imports
 from re import search
 from flask import Flask, render_template, request, redirect, url_for, session
-import testcase
 import tweepy_wrapper
 import machLearn
 
@@ -18,7 +17,6 @@ def home():
 # for passing variables from form to script
 @app.route('/', methods=['POST'])
 def webapp():
-
     searchInput = []
     searchInput.append(request.form['searchInput'])
     session['selectedTweets'] = searchInput
@@ -40,17 +38,16 @@ def twitter():
 # for passing variables from form to script
 @app.route("/twitter", methods=['POST'])
 def handle():
+    divShown = False
     if request.form['Submit'] == 'search':
         searchTopic = request.form['searchTopic']
-        print('helloworld')
         tweets = tweepy_wrapper.RecentTweetsWrapper(searchTopic)
-        return render_template('twitter.html', tweets=tweets, searchTopic=searchTopic)
+        divShown = True
+        return render_template('twitter.html', tweets=tweets, searchTopic=searchTopic, divShown=divShown)
     elif request.form['Submit'] == 'analyse':
-        print('helloworld2')
         session['selectedTweets'] = request.form.getlist('tweet')
         for checkbox in request.form.getlist('tweet'):
-            print(checkbox)
-            
+            print(checkbox)   
         return redirect("analysis", code=302)
 
 # Analysis PAGE routing
@@ -60,7 +57,6 @@ def analysis():
     passedTweets = []
     temparr = machLearn.Main(array)
     passedTweets = temparr
-    print('helloworld3')
     print(temparr)
     return render_template('analysis.html', passedTweets = passedTweets)
 
