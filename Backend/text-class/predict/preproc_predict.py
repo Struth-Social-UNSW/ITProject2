@@ -9,6 +9,7 @@ import spacy    # text preprocessing utility
 import re       # regex ops utility
 import html     # for the resolution of HTML entities
 import emoji    # for conversion of emojis
+import tensorflow
 
 def twitter_cleaning(input):
     """ This function prepares the input for preprocessing by removing Twitter specific
@@ -84,7 +85,7 @@ def spacy_preproc(input):
     """
     # loading the basic English library for preprocessing tasks
     nlp = spacy.load('en_core_web_sm')
-    stopword_list = nlp.Defaults.stop_words
+    # stopword_list = nlp.Defaults.stop_words
 
     # sets the text being input for preprocessing
     text_test = nlp(input)
