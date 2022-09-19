@@ -73,9 +73,9 @@ def preprocess(dataset):
     countFalse = dataset['label'].value_counts('false')
     print(countFalse)
 
-    # Add flag to track fake and real articles
-    dataset['target1'] = 'fake'
-    dataset['target2'] = 'true'
+    # Add flag to track fake and real articles if separate datasets, then merge the datasets
+    #dataset['target1'] = 'fake'
+    #dataset['target2'] = 'true'
 
     # Remove any unknown or unlabeled rows
     dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
@@ -109,7 +109,8 @@ def preprocess(dataset):
 
 ###  Word cloud for FAKE news  ###
 def fakeCloud(dataset):
-    fake_data = dataset[dataset["target1"] == "fake"]
+    #fake_data = dataset[dataset["target1"] == "fake"]
+    fake_data = dataset[dataset["label"] == "fake"]
     all_words = ' '.join([text for text in fake_data.text])
 
     wordcloud = WordCloud(width = 800,
@@ -130,7 +131,8 @@ def fakeCloud(dataset):
 
 ###  Word cloud for REAL news  ###
 def realCloud(dataset):
-    real_data = dataset[dataset["target2"] == "true"]
+    #real_data = dataset[dataset["target2"] == "true"]
+    real_data = dataset[dataset["label"] == "real"]
     all_words = ' '.join([text for text in real_data.text])
 
     wordcloud = WordCloud(width = 800,
