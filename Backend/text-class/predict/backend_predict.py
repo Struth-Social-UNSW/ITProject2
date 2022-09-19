@@ -5,8 +5,8 @@
 """
 
 __author__      = "Breydon Verryt-Reid"
-__date__        = "13 Aug 22"
-__Version__     = 1.0
+__date__        = "19 Sep 22"
+__Version__     = 2.0
 
 # importing utility scripts
 from preproc_predict import *
@@ -27,4 +27,4 @@ def main(input):
     print(result)
     return(result)
 
-main("The coronavirus pandemic has forced Florida racing tracks to close, and 1,500 greyhounds are now looking for homes")
+main("")
