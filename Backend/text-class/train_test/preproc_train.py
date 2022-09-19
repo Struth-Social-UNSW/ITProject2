@@ -168,7 +168,7 @@ def preprocmain(training, testing):
     print('Beginning Pre-Processing. The test dataset size is: '+str(len(trg_file.index))+' and the training dataset size is: '+str(len(test_file.index)))
     
     # Establishing the DF for output of preprocessed Tweets
-    preproc_dict = {'classifier': [], 'text': []}
+    preproc_dict = {'label': [], 'text': []}
     preproc_data_train = pd.DataFrame(data=preproc_dict)
     preproc_data_test = pd.DataFrame(data=preproc_dict)
     
@@ -189,13 +189,11 @@ def preprocmain(training, testing):
         twitter_cleaned = twitter_cleaning(test_file['text'][index])
         general_cleaned = general_cleanup(twitter_cleaned)
         spacy_cleaned = spacy_preproc(general_cleaned)
-        cleaned = {'classifier': [test_file['classifier'][index]], 'text': [spacy_cleaned]} # creates a new Dict object containing the preprocessed Tweet
+        cleaned = {'label': [test_file['label'][index]], 'text': [spacy_cleaned]} # creates a new Dict object containing the preprocessed Tweet
         preproc_add = pd.DataFrame(cleaned)
         preproc_data_test_up = pd.concat([preproc_data_test, preproc_add], sort=False)
         preproc_data_test = preproc_data_test_up    # updates the dataframe with the newly preprocessed Tweet
     
     preproc_data_train.to_csv('./trg_data/preproc_data_train.csv', index=False)
-    print(preproc_data_train)
     
     preproc_data_test.to_csv('./trg_data/preproc_data_test.csv', index=False)
-    print(preproc_data_test)
