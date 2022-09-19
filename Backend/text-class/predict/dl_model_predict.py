@@ -9,11 +9,7 @@ __date__        = "12 Aug 22"
 __Version__     = 1.0
 
 # importing required libraries
-from sre_parse import Tokenizer
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
-import tensorflow as tf
-import json
-import numpy
+from transformers import pipeline
 
 def dlmodelmain(input):
     """ This function contains the model which takes in a string or list of strings and performs an analysis of that text
@@ -24,9 +20,9 @@ def dlmodelmain(input):
         ** Returns **
         A many dimensional vector modelling the features of the text, as per the pretraining of the model
     """
-    
-    pipe = pipeline("zero-shot-classification", model="digitalepidemiologylab/covid-twitter-bert-v2-mnli")    
-    fake_real = ['fake', 'real']
-    statement = 'This example is {}.'
-    result = pipe(input, fake_real, hypothesis_template=statement, multi_label=True)
+    pipe = pipeline("text-classification", model="../train_test/finetuned_model", tokenizer="digitalepidemiologylab/covid-twitter-bert-v2")
+    result = pipe(input)
+    print(result)
     return result
+
+dlmodelmain("Florida Governor Ron DeSantis Botches COVID-19 Response - By banning Corona beer in order to flatten pandemic curve.")
