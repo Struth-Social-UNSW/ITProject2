@@ -176,7 +176,7 @@ def countWords(dataset):
     token_space = tokenize.WhitespaceTokenizer()
 
     # Most frequent words in fake news
-    counter(dataset[dataset['target1'] == "fake"], "text", 20, token_space)
+    counter(dataset[dataset['label'] == "fake"], "text", 20, token_space)
 
     # Most frequent words in real news
     #counter(dataset[dataset['target2'] == "true"], "text", 20, token_space)
