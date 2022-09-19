@@ -6,13 +6,9 @@ emoji
 nltk
 wordcloud
 seaborn
-pickle
-itertools
-string
 numpy
 pandas
 matplotlib
-re
-html
 datasets
 transformers
+torch
