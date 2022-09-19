@@ -166,7 +166,7 @@ def counter(text, column_text, quantity, token_space):
     plt.savefig('img_freqWords.jpg')
 
     # Displays frequent words table to screen
-    # plt.show()
+    #plt.show()
 
 
 ###  Count most frequent words in fake and real news  ###
@@ -223,7 +223,8 @@ def plotConfusionMatrix(cm, classes,
     plt.savefig('img_confMatrix.jpg')
 
     # Displays confusion matrix to the screen
-    # plt.show()
+    #plt.show()
+    plt.close()
 
 
 ###   Display Confustion Matrix  ###
