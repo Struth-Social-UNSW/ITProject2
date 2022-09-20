@@ -74,8 +74,8 @@ def preprocess(dataset):
     print(countFalse)
 
     # Add flag to track fake and real articles
-    dataset['target1'] = 'fake'
-    dataset['target2'] = 'true'
+    #dataset['target1'] = 'fake'
+    #dataset['target2'] = 'true'
 
     # Remove any unknown or unlabeled rows
     dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
@@ -109,7 +109,7 @@ def preprocess(dataset):
 
 ###  Word cloud for FAKE news  ###
 def fakeCloud(dataset):
-    fake_data = dataset[dataset["target1"] == "fake"]
+    fake_data = dataset[dataset["label"] == "fake"]
     all_words = ' '.join([text for text in fake_data.text])
 
     wordcloud = WordCloud(width = 800,
@@ -122,7 +122,7 @@ def fakeCloud(dataset):
     plt.axis("off")
 
     # Saves word cloud as jpg
-    plt.savefig('img_fakeCloud.jpg')
+    plt.savefig('static/img_fakeCloud.jpg')
 
     # Displays word cloud to screen
     #plt.show()
@@ -130,7 +130,7 @@ def fakeCloud(dataset):
 
 ###  Word cloud for REAL news  ###
 def realCloud(dataset):
-    real_data = dataset[dataset["target2"] == "true"]
+    real_data = dataset[dataset["label"] == "real"]
     all_words = ' '.join([text for text in real_data.text])
 
     wordcloud = WordCloud(width = 800,
@@ -143,7 +143,7 @@ def realCloud(dataset):
     plt.axis("off")
 
     # Saves word cloud as jpg
-    plt.savefig('img_realCloud.jpg')
+    plt.savefig('static/img_realCloud.jpg')
 
     # Displays word cloud to screen
     #plt.show()
@@ -163,7 +163,7 @@ def counter(text, column_text, quantity, token_space):
     plt.xticks(rotation = 'vertical')
 
     # Saves frequent words table as jpg
-    plt.savefig('img_freqWords.jpg')
+    plt.savefig('static/img_freqWords.jpg')
 
     # Displays frequent words table to screen
     # plt.show()
@@ -174,7 +174,7 @@ def countWords(dataset):
     token_space = tokenize.WhitespaceTokenizer()
 
     # Most frequent words in fake news
-    counter(dataset[dataset['target1'] == "fake"], "text", 20, token_space)
+    counter(dataset[dataset['label'] == "fake"], "text", 20, token_space)
 
     # Most frequent words in real news
     #counter(dataset[dataset['target2'] == "true"], "text", 20, token_space)
@@ -220,11 +220,11 @@ def plotConfusionMatrix(cm, classes,
     plt.xlabel('Predicted label')
 
     # Saves confusion matrix as jpg
-    plt.savefig('img_confMatrix.jpg')
+    plt.savefig('static/img_confMatrix.jpg')
 
     # Displays confusion matrix to the screen
     # plt.show()
-
+    plt.close()
 
 ###   Display Confustion Matrix  ###
 def dispConfusionMatrix(y_test, predicted):

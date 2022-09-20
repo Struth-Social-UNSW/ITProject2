@@ -14,12 +14,19 @@
 				border-spacing: 30px;
 			}
 
-			tr,
-			td {
+			tr,td {
 				padding: 10px;
 				padding-left: 20px;
 				padding-right: 40px;
 				border-bottom: 1px solid #ddd;
+			}
+			tr.images {
+				text-align: center;
+				padding-bottom: 100px;
+			}
+			td.images {
+				width: 25%;
+				padding:0%;
 			}
 		</style>
 </head>
@@ -111,22 +118,23 @@
 				{%endfor%}
 			</table>
 		</div>
-		<div class='container-fluid'>
 			<table>
-				<tr style="font-weight:bold">
+				<tr class = "images" style="font-weight:bold">
+					<td width="25%">Confusion Matrix</td>
 					<td width="25%">Real Word Cloud</td>
 					<td width="25%">Fake Word Cloud</td>
-					<td width="25%">Confusion Matrix</td>
 					<td width="25%">Word Frequency</td>
 				</tr>
-				<tr>
-					<td><img src="/static/img_realCloud.jpg"></td>
-					<td><img src="/static/img_fakeCloud.jpg"></td>
-					<td><img src="/static/img_confMatrix.jpg"></td>
-					<td><img src="/static/img_freqWords.jpg"></td>
+				<tr class="images">
+					<td  class="images"><img src="/static/img_confMatrix.jpg" width="100%"></td>
+					<td  class="images"><img src="/static/img_realCloud.jpg" width="100%"></td>
+					<td  class="images"><img src="/static/img_fakeCloud.jpg" width="100%"></td>
+					<td  class="images"><img src="/static/img_freqWords.jpg" width="100%"></td>
 				</tr>
 			</table>
-		</div>
+			<br>
+			<br>
+			<br>
 	</div>
 </body>
 
