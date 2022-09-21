@@ -4,7 +4,6 @@ from flask import Flask, render_template, request, redirect, url_for, session
 #from Flask_App.machLearn import fakeCloud, realCloud
 import tweepy_wrapper
 import machLearn
-import os
 
 app = Flask(__name__)
 app.secret_key = 'struthSocialFakeNewsDetection'
@@ -15,9 +14,13 @@ app.secret_key = 'struthSocialFakeNewsDetection'
 def home():
     return render_template('home.html')
 
+# RAW TEXT routing
+@app.route("/rawText")
+def rawText():
+    return render_template('rawText.html')
 
 # for passing variables from form to script
-@app.route('/', methods=['POST'])
+@app.route('/rawText', methods=['POST'])
 def webapp():
     searchInput = []
     searchInput.append(request.form['searchInput'])
@@ -52,6 +55,7 @@ def handle():
             print(checkbox)   
         return redirect("analysis", code=302)
 
+
 # Analysis PAGE routing
 @app.route("/analysis")
 def analysis():
@@ -60,10 +64,6 @@ def analysis():
     temparr = machLearn.Main(array)
     passedTweets = temparr
     print(temparr)
-    # fakeCloud = os.path.join(app.config['UPLOAD_FOLDER'], 'img_fakeCloud.jpg')
-    # realCloud = os.path.join(app.config['UPLOAD_FOLDER'], 'img_realCloud.jpg')
-    # confMatrix = os.path.join(app.config['UPLOAD_FOLDER'], 'img_confMatrix.jpg')
-    # freqWords = os.path.join(app.config['UPLOAD_FOLDER'], 'img_freqWords.jpg')
     return render_template('analysis.html', passedTweets = passedTweets)
 
 # Running app, debug mode can be changed here
