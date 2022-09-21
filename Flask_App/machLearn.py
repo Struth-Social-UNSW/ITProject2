@@ -70,7 +70,7 @@ def preprocess(dataset):
     countFalse = dataset['label'].value_counts()
     print(countFalse)
 
-    countFalse = dataset['label'].value_counts('false')
+    countFalse = dataset['label'].value_counts('fake')
     print(countFalse)
 
     # Add flag to track fake and real articles if separate datasets, then merge the datasets
@@ -127,6 +127,7 @@ def fakeCloud(dataset):
 
     # Displays word cloud to screen
     #plt.show()
+    plt.close()
 
 
 ###  Word cloud for REAL news  ###
@@ -149,6 +150,7 @@ def realCloud(dataset):
 
     # Displays word cloud to screen
     #plt.show()
+    plt.close()
 
 
 ###  Most frequent words counter  ###
@@ -169,6 +171,7 @@ def counter(text, column_text, quantity, token_space):
 
     # Displays frequent words table to screen
     #plt.show()
+    plt.close()
 
 
 ###  Count most frequent words in fake and real news  ###
@@ -217,9 +220,9 @@ def plotConfusionMatrix(cm, classes,
                     horizontalalignment="center",
                     color="white" if cm[i, j] > thresh else "black")
     
-    plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+    plt.tight_layout()
 
     # Saves confusion matrix as jpg
     plt.savefig('img_confMatrix.jpg')
