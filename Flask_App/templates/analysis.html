@@ -12,8 +12,11 @@
 			width:100%;
 			border-spacing: 30px;
 		}
-		tr,td {
-  			padding:10px;
+		tr, td {
+			padding:10px;
+			padding-left: 20px;
+			padding-right: 40px;
+			border-bottom: 1px solid #ddd;
 		}
 	</style>
 </head>
@@ -31,13 +34,13 @@
 			</div>
 		</div>
 	</nav>
-	<br>
-	<br>
+
 <br>
+<div class='container-fluid'>
 <table>
 	<!-- Table headers -->
 		<tr style="font-weight:bold">
-			<td width="60%">Tweet</td>
+			<td width="60%">Input</td>
 			<td width="10%">Passive Aggressive Result</td>
 			<td width="10%">Logisitic Regression Result</td>
 			<td width="10%">Decision Tree Result</td>
@@ -55,5 +58,6 @@
 		</tr>
 		{%endfor%}
 	</table>
+</div>
 </body>
 </html>
