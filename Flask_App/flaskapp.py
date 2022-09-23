@@ -1,6 +1,7 @@
 # imports
 from re import search
 from flask import Flask, render_template, request, redirect, url_for, session
+#from Flask_App.machLearn import fakeCloud, realCloud
 import tweepy_wrapper
 import machLearn
 
@@ -13,9 +14,13 @@ app.secret_key = 'struthSocialFakeNewsDetection'
 def home():
     return render_template('home.html')
 
+# RAW TEXT routing
+@app.route("/rawText")
+def rawText():
+    return render_template('rawText.html')
 
 # for passing variables from form to script
-@app.route('/', methods=['POST'])
+@app.route('/rawText', methods=['POST'])
 def webapp():
     searchInput = []
     searchInput.append(request.form['searchInput'])
@@ -49,6 +54,7 @@ def handle():
         for checkbox in request.form.getlist('tweet'):
             print(checkbox)   
         return redirect("analysis", code=302)
+
 
 # Analysis PAGE routing
 @app.route("/analysis")

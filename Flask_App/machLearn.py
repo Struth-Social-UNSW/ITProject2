@@ -70,10 +70,10 @@ def preprocess(dataset):
     countFalse = dataset['label'].value_counts()
     print(countFalse)
 
-    countFalse = dataset['label'].value_counts('false')
+    countFalse = dataset['label'].value_counts('fake')
     print(countFalse)
 
-    # Add flag to track fake and real articles if separate datasets, then merge the datasets
+    # Add flag to track fake and real articles
     #dataset['target1'] = 'fake'
     #dataset['target2'] = 'true'
 
@@ -109,7 +109,6 @@ def preprocess(dataset):
 
 ###  Word cloud for FAKE news  ###
 def fakeCloud(dataset):
-    #fake_data = dataset[dataset["target1"] == "fake"]
     fake_data = dataset[dataset["label"] == "fake"]
     all_words = ' '.join([text for text in fake_data.text])
 
@@ -123,15 +122,15 @@ def fakeCloud(dataset):
     plt.axis("off")
 
     # Saves word cloud as jpg
-    plt.savefig('img_fakeCloud.jpg')
+    plt.savefig('static/img_fakeCloud.jpg')
 
     # Displays word cloud to screen
     #plt.show()
+    plt.close()
 
 
 ###  Word cloud for REAL news  ###
 def realCloud(dataset):
-    #real_data = dataset[dataset["target2"] == "true"]
     real_data = dataset[dataset["label"] == "real"]
     all_words = ' '.join([text for text in real_data.text])
 
@@ -145,10 +144,11 @@ def realCloud(dataset):
     plt.axis("off")
 
     # Saves word cloud as jpg
-    plt.savefig('img_realCloud.jpg')
+    plt.savefig('static/img_realCloud.jpg')
 
     # Displays word cloud to screen
     #plt.show()
+    plt.close()
 
 
 ###  Most frequent words counter  ###
@@ -165,10 +165,11 @@ def counter(text, column_text, quantity, token_space):
     plt.xticks(rotation = 'vertical')
 
     # Saves frequent words table as jpg
-    plt.savefig('img_freqWords.jpg')
+    plt.savefig('static/img_freqWords.jpg')
 
     # Displays frequent words table to screen
     #plt.show()
+    plt.close()
 
 
 ###  Count most frequent words in fake and real news  ###
@@ -217,17 +218,16 @@ def plotConfusionMatrix(cm, classes,
                     horizontalalignment="center",
                     color="white" if cm[i, j] > thresh else "black")
     
-    plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+    plt.tight_layout()
 
     # Saves confusion matrix as jpg
-    plt.savefig('img_confMatrix.jpg')
+    plt.savefig('static/img_confMatrix.jpg')
 
     # Displays confusion matrix to the screen
-    #plt.show()
+    # plt.show()
     plt.close()
-
 
 ###   Display Confustion Matrix  ###
 def dispConfusionMatrix(y_test, predicted):
@@ -377,7 +377,8 @@ def randomForest(x_train, x_test, y_train, y_test):
 #####  Main Program  #####
 def Main(InputArray):
     # Dataset source
-    dataFile = './kaggle-covid-news.csv'
+    #dataFile = './kaggle-covid-news.csv'
+    dataFile = './general-news.csv'
 
     # Load and read dataset
     data = read(dataFile)
