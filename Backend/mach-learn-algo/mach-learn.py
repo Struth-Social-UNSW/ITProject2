@@ -20,7 +20,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import feature_extraction, linear_model, model_selection, preprocessing
 from sklearn import metrics
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import PassiveAggressiveClassifier
@@ -64,16 +64,28 @@ def punctuation_removal(text):
 
 ###  Pre-process dataset  ###
 def preprocess(dataset):
+
+    dataset['label'].mask(dataset['label'] == 1, 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 0, 'fake', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'T', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'F', 'fake', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'REAL', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'TRUE', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'FAKE', 'fake', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'Real', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'True', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'Fake', 'fake', inplace=True)
+
     # Determine weight of dataset
     countFalse = dataset['label'].value_counts()
     print(countFalse)
 
-    countFalse = dataset['label'].value_counts('false')
+    countFalse = dataset['label'].value_counts('fake')
     print(countFalse)
 
     # Add flag to track fake and real articles
-    dataset['target1'] = 'fake'
-    dataset['target2'] = 'true'
+    #dataset['target1'] = 'fake'
+    #dataset['target2'] = 'true'
 
     # Remove any unknown or unlabeled rows
     dataset.drop(dataset[dataset['label'] == 'U'].index, inplace = True)
@@ -83,19 +95,33 @@ def preprocess(dataset):
     #print('\nDataset.head: \n', dataset.head())
 
     # Convert to lowercase
+    #dataset['title'] = dataset['title'].apply(lambda x: x.lower())
     dataset['text'] = dataset['text'].apply(lambda x: x.lower())
     #print('\nDataset.head: \n', dataset.head())
 
     # Remove punctuation
+    #dataset['title'] = dataset['title'].apply(punctuation_removal)
     dataset['text'] = dataset['text'].apply(punctuation_removal)
+    #print('\nDataset.head: \n', dataset.head())
+
+    # Remove emojis
+    filter_char = lambda c: ord(c) < 256
+    dataset['text'] = dataset['text'].apply(lambda s: ''.join(filter(filter_char, s)))
     #print('\nDataset.head: \n', dataset.head())
 
     # Remove stopwords
     stop = stopwords.words('english')
+    #dataset['title'] = dataset['title'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
     dataset['text'] = dataset['text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
 
-    # Print first 5 rows of dataset after pre-processing
     print('\nDataset.head: \n', dataset.head())
+
+    # Shuffle dataset
+    dataset = dataset.sample(frac=1).reset_index(drop=True)
+    #df4 = df4.sample(frac=1)
+
+    # Print first 5 rows of dataset after pre-processing
+    print('\nDataset.head shuffled: \n', dataset.head())
 
     return dataset
 
@@ -107,7 +133,7 @@ def preprocess(dataset):
 
 ###  Word cloud for FAKE news  ###
 def fakeCloud(dataset):
-    fake_data = dataset[dataset["target1"] == "fake"]
+    fake_data = dataset[dataset["label"] == "fake"]
     all_words = ' '.join([text for text in fake_data.text])
 
     wordcloud = WordCloud(width = 800,
@@ -124,11 +150,12 @@ def fakeCloud(dataset):
 
     # Displays word cloud to screen
     #plt.show()
+    plt.close()
 
 
 ###  Word cloud for REAL news  ###
 def realCloud(dataset):
-    real_data = dataset[dataset["target2"] == "true"]
+    real_data = dataset[dataset["label"] == "real"]
     all_words = ' '.join([text for text in real_data.text])
 
     wordcloud = WordCloud(width = 800,
@@ -145,6 +172,7 @@ def realCloud(dataset):
 
     # Displays word cloud to screen
     #plt.show()
+    plt.close()
 
 
 ###  Most frequent words counter  ###
@@ -165,6 +193,7 @@ def counter(text, column_text, quantity, token_space):
 
     # Displays frequent words table to screen
     plt.show()
+    plt.close()
 
 
 ###  Count most frequent words in fake and real news  ###
@@ -172,7 +201,7 @@ def countWords(dataset):
     token_space = tokenize.WhitespaceTokenizer()
 
     # Most frequent words in fake news
-    counter(dataset[dataset['target1'] == "fake"], "text", 20, token_space)
+    counter(dataset[dataset['label'] == "fake"], "text", 20, token_space)
 
     # Most frequent words in real news
     #counter(dataset[dataset['target2'] == "true"], "text", 20, token_space)
@@ -187,6 +216,13 @@ def countWords(dataset):
 def accuracy(y_test, predicted):
     score = accuracy_score(y_test, predicted)
     print("Accuracy: ", round(score*100,2), "%")
+    #f1Score = f1_score(y_test, predicted)
+    #print("F1 Score: ", round(f1Score*100,2), "%")
+    print("Precision:   measures the proportion of positively predicted labels that are acutualy correct.")
+    print("Recall:      represents the model's ability to correctly predict the positives out of actual positives.")
+    print("F1 Score:    represents the model score as a function of precision and recall score.")
+    print("Recall:      represents the model's ability to correctly predict the positives out of actual positives.\n")
+    print(metrics.classification_report(y_test, predicted))
 
 
 ###  Confustion matrix  ###
@@ -213,9 +249,9 @@ def plotConfusionMatrix(cm, classes,
                     horizontalalignment="center",
                     color="white" if cm[i, j] > thresh else "black")
     
-    plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+    plt.tight_layout()
 
     # Saves confusion matrix as jpg
     plt.savefig('img_confMatrix.jpg')
@@ -375,6 +411,9 @@ def randomForest(x_train, x_test, y_train, y_test):
 
 # Dataset source
 dataFile = './kaggle-covid-news.csv'
+#dataFile = './general-news.csv'
+#dataFile = './covid-news.csv'
+#dataFile = './general-WELFake.csv'
 
 # Load and read dataset
 data = read(dataFile)
