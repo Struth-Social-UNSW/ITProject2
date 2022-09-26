@@ -1,4 +1,5 @@
 backend/backend.code-workspace
 Flask_App/TwitterApiKey.txt
 backend/text-class/train_test/finetuned_model/pytorch_model.bin
-backend/datasets/220922-combo-gen-covid.csv
+Datasets/WELFake_Dataset.csv
+Datasets/general-WELFake.csv
