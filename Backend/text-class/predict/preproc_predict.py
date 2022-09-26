@@ -29,18 +29,35 @@ def twitter_cleaning(input):
 
     ## Removing Twitter Handles
     remhand = re.sub('@[^\s]+', '', remurl)
+    
+    ## Removing Hashtags (covid)
+    remhash1 = remhand.replace('#covid', 'covid')
+    
+    ## Removing Hashtags (covid19)
+    remhash2 = remhash1.replace('#covid19', 'covid19')
+    
+    ## Removing Hashtags (coronavirus)
+    remhash3 = remhash2.replace('#coronavirus', 'coronavirus')
 
-    ## Removing Hashtags
-    # remhash = re.sub('#[^\s]+', '', remhand)
-    remhash = remhand.replace('#', '')
+    ## Removing Hashtags (general)
+    remhash4 = re.sub('#[^\s]+', '', remhash3)
+    
+    ## Removing twitterurl tags
+    remtwitterurl = remhash4.replace('twitterurl', '')
+    
+    ## Removing twitteruser tags
+    remtwitteruser = remtwitterurl.replace('twitteruser', '')
+    
+    ## Removing rt tags
+    remrt = remtwitteruser.replace('rt', '')
 
     ## Switching Emojis to their descriptions
-    rememoji = emoji.demojize(remhash)
-
+    rememoji = emoji.demojize(remrt)
+    
     ## Removing '???' occurences
     remqmarks = rememoji.replace('???', '')
     remqmarks = remqmarks.replace('??', '')
-
+    
     return remqmarks
 
 def general_cleanup(input):
@@ -74,8 +91,7 @@ def spacy_preproc(input):
         This exchanges the string values into tokens which can be used again by spaCy.
 
         Excess spaces are then removed and colons removed. The colons appear from the conversion
-        of emojis to text representation. Finally, the tokens are lemmatised before they are
-        output as str objects to a new list.
+        of emojis to text representation. Finally, the tokens are output as str objects to a new list.
 
         ** Parameters **
         input: a str containing the body of a Tweet
@@ -85,7 +101,7 @@ def spacy_preproc(input):
     """
     # loading the basic English library for preprocessing tasks
     nlp = spacy.load('en_core_web_sm')
-    # stopword_list = nlp.Defaults.stop_words
+    stopword_list = nlp.Defaults.stop_words
 
     # sets the text being input for preprocessing
     text_test = nlp(input)
