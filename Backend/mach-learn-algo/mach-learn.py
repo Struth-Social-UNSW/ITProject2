@@ -445,19 +445,28 @@ print('\nNews article reads: ', news, '\n')
 
 # Passive Aggressive Classifier result
 result = passAggrModel.predict([news])
-print('Passive Aggressive result is: ', result[0])
+conf = passAggrModel.predict_proba([news])
+print('Passive Aggressive result is: \t', result[0], ' with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+#print('Passive Aggressive result is: ', conf[0])
+#print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+#print("Confidence: ", round(conf[0][0]*100,2), "%")
 
 # Logic Regression result
 result = logicRegModel.predict([news])
-print('Logic Regression result is: ', result[0])
+conf = logicRegModel.predict_proba([news])
+print('Logic Regression result is: \t', result[0], ' with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+#print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 
 # Decision Tree Classifier result
 result = decTreeModel.predict([news])
-print('Decision Tree result is: ', result[0])
+conf = decTreeModel.predict_proba([news])
+print('Decision Tree result is: \t', result[0], ' with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
 
 # Random Forest Classifier result
 result = randForModel.predict([news])
-print('Random Forest result is: ', result[0])
+conf = randForModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 
 # News article input
