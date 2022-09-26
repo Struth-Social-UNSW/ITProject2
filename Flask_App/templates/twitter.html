@@ -115,6 +115,7 @@
 		</div>
 		<br>
 
+		{% if tweets %}
 		{% if divShown == True %}
 		<!--	table to print results-->
 		<div class='container'>
@@ -162,6 +163,13 @@
 			</form>
 		</div>
 		<br><br><br><br>
+		{% endif %}
+		{% else %}
+		{% if searchButtonClicked == True %}
+			<div class='container'>
+				<p>No results found for: <b>{{searchTopic}}</b> - Please try a different search term!</p>
+			</div>
+		{% endif %}
 		{% endif %}
 	</div>
 </body>

@@ -3,10 +3,12 @@ from re import search
 from flask import Flask, render_template, request, redirect, url_for, session
 #from Flask_App.machLearn import fakeCloud, realCloud
 import tweepy_wrapper
-import machLearn
+import machLearn_Run
 
 app = Flask(__name__)
 app.secret_key = 'struthSocialFakeNewsDetection'
+#Clear image cache after 0 seconds, stops images getting stuck/not updating
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 # HOME PAGE routing
@@ -44,11 +46,14 @@ def twitter():
 @app.route("/twitter", methods=['POST'])
 def handle():
     divShown = False
+    searchButtonClicked = False
     if request.form['Submit'] == 'search':
+        searchButtonClicked = True
         searchTopic = request.form['searchTopic']
         tweets = tweepy_wrapper.RecentTweetsWrapper(searchTopic)
-        divShown = True
-        return render_template('twitter.html', tweets=tweets, searchTopic=searchTopic, divShown=divShown)
+        if tweets:
+            divShown = True
+        return render_template('twitter.html', tweets=tweets, searchTopic=searchTopic, divShown=divShown, searchButtonClicked=searchButtonClicked)
     elif request.form['Submit'] == 'analyse':
         session['selectedTweets'] = request.form.getlist('tweet')
         for checkbox in request.form.getlist('tweet'):
@@ -61,7 +66,7 @@ def handle():
 def analysis():
     array=session.get('selectedTweets', None)
     passedTweets = []
-    temparr = machLearn.Main(array)
+    temparr = machLearn_Run.Main(array)
     passedTweets = temparr
     print(temparr)
     return render_template('analysis.html', passedTweets = passedTweets)
