@@ -1,3 +1,6 @@
+backend/backend.code-workspace
+Flask_App/TwitterApiKey.txt
+backend/text-class/train_test/finetuned_model/pytorch_model.bin
 Datasets/WELFake_Dataset.csv
 Datasets/general-WELFake.csv
 Backend/mach-learn-algo/general-WELFake.csv
