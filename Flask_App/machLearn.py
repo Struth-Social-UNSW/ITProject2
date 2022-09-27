@@ -22,7 +22,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import feature_extraction, linear_model, model_selection, preprocessing
 from sklearn import metrics
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import PassiveAggressiveClassifier
@@ -66,6 +66,18 @@ def punctuation_removal(text):
 
 ###  Pre-process dataset  ###
 def preprocess(dataset):
+
+    dataset['label'].mask(dataset['label'] == 1, 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 0, 'fake', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'T', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'F', 'fake', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'REAL', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'TRUE', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'FAKE', 'fake', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'Real', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'True', 'real', inplace=True)
+    dataset['label'].mask(dataset['label'] == 'Fake', 'fake', inplace=True)
+
     # Determine weight of dataset
     countFalse = dataset['label'].value_counts()
     print(countFalse)
@@ -85,16 +97,30 @@ def preprocess(dataset):
     #print('\nDataset.head: \n', dataset.head())
 
     # Convert to lowercase
+    #dataset['title'] = dataset['title'].apply(lambda x: x.lower())
     dataset['text'] = dataset['text'].apply(lambda x: x.lower())
     #print('\nDataset.head: \n', dataset.head())
 
     # Remove punctuation
+    #dataset['title'] = dataset['title'].apply(punctuation_removal)
     dataset['text'] = dataset['text'].apply(punctuation_removal)
+    #print('\nDataset.head: \n', dataset.head())
+
+    # Remove emojis
+    filter_char = lambda c: ord(c) < 256
+    dataset['text'] = dataset['text'].apply(lambda s: ''.join(filter(filter_char, s)))
     #print('\nDataset.head: \n', dataset.head())
 
     # Remove stopwords
     stop = stopwords.words('english')
+    #dataset['title'] = dataset['title'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
     dataset['text'] = dataset['text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop)]))
+
+    print('\nDataset.head: \n', dataset.head())
+
+    # Shuffle dataset
+    dataset = dataset.sample(frac=1).reset_index(drop=True)
+    #df4 = df4.sample(frac=1)
 
     # Print first 5 rows of dataset after pre-processing
     print('\nDataset.head: \n', dataset.head())
@@ -192,6 +218,13 @@ def countWords(dataset):
 def accuracy(y_test, predicted):
     score = accuracy_score(y_test, predicted)
     print("Accuracy: ", round(score*100,2), "%")
+    #f1Score = f1_score(y_test, predicted)
+    #print("F1 Score: ", round(f1Score*100,2), "%")
+    print("Precision:   measures the proportion of positively predicted labels that are acutualy correct.")
+    print("Recall:      represents the model's ability to correctly predict the positives out of actual positives.")
+    print("F1 Score:    represents the model score as a function of precision and recall score.")
+    print("Recall:      represents the model's ability to correctly predict the positives out of actual positives.\n")
+    print(metrics.classification_report(y_test, predicted))
 
 
 ###  Confustion matrix  ###
@@ -379,6 +412,7 @@ def Main(InputArray):
     # Dataset source
     #dataFile = './kaggle-covid-news.csv'
     dataFile = './general-news.csv'
+    #dataFile = './general-WELFake.csv'
 
     # Load and read dataset
     data = read(dataFile)
@@ -426,85 +460,228 @@ if __name__ == '__main__':
     
 
 
-    # # News article input
-    # news = 'covid is hoax'
-    # print('\nNews article reads: ', news, '\n')
+    ##  Query Tweet/headline/text for fake news determination on Covid
 
-    # # Passive Aggressive Classifier result
-    # result = passAggrModel.predict([news])
-    # print('Passive Aggressive result is: ', result[0])
+    # News article input
+    #news = 'covid is hoax'
+    #print('\nNews article reads: ', news, '\n')
 
-    # # Logic Regression result
-    # result = logicRegModel.predict([news])
-    # print('Logic Regression result is: ', result[0])
+    # Passive Aggressive Classifier result
+    #result = passAggrModel.predict([news])
+    #conf = passAggrModel.predict_proba([news])
+    #print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Passive Aggressive result is: ', conf[0])
+    #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+    #print("Confidence: ", round(conf[0][0]*100,2), "%")
 
-    # # Decision Tree Classifier result
-    # result = decTreeModel.predict([news])
-    # print('Decision Tree result is: ', result[0])
+    # Logic Regression result
+    #result = logicRegModel.predict([news])
+    #conf = logicRegModel.predict_proba([news])
+    #print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 
-    # # Random Forest Classifier result
-    # result = randForModel.predict([news])
-    # print('Random Forest result is: ', result[0])
+    # Decision Tree Classifier result
+    #result = decTreeModel.predict([news])
+    #conf = decTreeModel.predict_proba([news])
+    #print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-
-    # # News article input
-    # news = 'washing your hands regularly is one of the best ways to prevent the spead of coronavirus'
-    # print('\nNews article reads: ', news, '\n')
-
-    # # Passive Aggressive Classifier result
-    # result = passAggrModel.predict([news])
-    # print('Passive Aggressive result is: ', result[0])
-
-    # # Logic Regression result
-    # result = logicRegModel.predict([news])
-    # print('Logic Regression result is: ', result[0])
-
-    # # Decision Tree Classifier result
-    # result = decTreeModel.predict([news])
-    # print('Decision Tree result is: ', result[0])
-
-    # # Random Forest Classifier result
-    # result = randForModel.predict([news])
-    # print('Random Forest result is: ', result[0])
+    # Random Forest Classifier result
+    #result = randForModel.predict([news])
+    #conf = randForModel.predict_proba([news])
+    #print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 
-    # # News article input
-    # news = 'The novel coronavirus outbreak has spread to more than 150 countries or territories around the world'
-    # print('\nNews article reads: ', news, '\n')
+    # News article input
+    #news = 'washing your hands regularly is one of the best ways to prevent the spead of coronavirus'
+    #print('\nNews article reads: ', news, '\n')
 
-    # # Passive Aggressive Classifier result
-    # result = passAggrModel.predict([news])
-    # print('Passive Aggressive result is: ', result[0])
+    # Passive Aggressive Classifier result
+    #result = passAggrModel.predict([news])
+    #conf = passAggrModel.predict_proba([news])
+    #print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-    # # Logic Regression result
-    # result = logicRegModel.predict([news])
-    # print('Logic Regression result is: ', result[0])
+    # Logic Regression result
+    #result = logicRegModel.predict([news])
+    #conf = logicRegModel.predict_proba([news])
+    #print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-    # # Decision Tree Classifier result
-    # result = decTreeModel.predict([news])
-    # print('Decision Tree result is: ', result[0])
+    # Decision Tree Classifier result
+    #result = decTreeModel.predict([news])
+    #conf = decTreeModel.predict_proba([news])
+    #print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-    # # Random Forest Classifier result
-    # result = randForModel.predict([news])
-    # print('Random Forest result is: ', result[0])
+    # Random Forest Classifier result
+    #result = randForModel.predict([news])
+    #conf = randForModel.predict_proba([news])
+    #print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 
-    # # News article input
-    # news = 'Coronavirus is only dangerous for old people'
-    # print('\nNews article reads: ', news, '\n')
+    # News article input
+    #news = 'The novel coronavirus outbreak has spread to more than 150 countries or territories around the world'
+    #print('\nNews article reads: ', news, '\n')
 
-    # # Passive Aggressive Classifier result
-    # result = passAggrModel.predict([news])
-    # print('Passive Aggressive result is: ', result[0])
+    # Passive Aggressive Classifier result
+    #result = passAggrModel.predict([news])
+    #conf = passAggrModel.predict_proba([news])
+    #print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-    # # Logic Regression result
-    # result = logicRegModel.predict([news])
-    # print('Logic Regression result is: ', result[0])
+    # Logic Regression result
+    #result = logicRegModel.predict([news])
+    #conf = logicRegModel.predict_proba([news])
+    #print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-    # # Decision Tree Classifier result
-    # result = decTreeModel.predict([news])
-    # print('Decision Tree result is: ', result[0])
+    # Decision Tree Classifier result
+    #result = decTreeModel.predict([news])
+    #conf = decTreeModel.predict_proba([news])
+    #print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-    # # Random Forest Classifier result
-    # result = randForModel.predict([news])
-    # print('Random Forest result is: ', result[0])
+    # Random Forest Classifier result
+    #result = randForModel.predict([news])
+    #conf = randForModel.predict_proba([news])
+    #print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+
+    # News article input
+    #news = 'Coronavirus is only dangerous for old people'
+    #print('\nNews article reads: ', news, '\n')
+
+    # Passive Aggressive Classifier result
+    #result = passAggrModel.predict([news])
+    #conf = passAggrModel.predict_proba([news])
+    #print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+    # Logic Regression result
+    #result = logicRegModel.predict([news])
+    #conf = logicRegModel.predict_proba([news])
+    #print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+    # Decision Tree Classifier result
+    #result = decTreeModel.predict([news])
+    #conf = decTreeModel.predict_proba([news])
+    #print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+    # Random Forest Classifier result
+    #result = randForModel.predict([news])
+    #conf = randForModel.predict_proba([news])
+    #print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+
+
+
+    ##  Query Tweet/headline/text for fake news determination on general news
+
+    # News article input
+    #news = 'NASA is installing internet on the moon'
+    #print('\nNews article reads: ', news, '\n')
+
+    # Passive Aggressive Classifier result
+    #result = passAggrModel.predict([news])
+    #conf = passAggrModel.predict_proba([news])
+    #print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Passive Aggressive result is: ', conf[0])
+    #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+    #print("Confidence: ", round(conf[0][0]*100,2), "%")
+
+    # Logic Regression result
+    #result = logicRegModel.predict([news])
+    #conf = logicRegModel.predict_proba([news])
+    #print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+
+    # Decision Tree Classifier result
+    #result = decTreeModel.predict([news])
+    #conf = decTreeModel.predict_proba([news])
+    #print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+    # Random Forest Classifier result
+    #result = randForModel.predict([news])
+    #conf = randForModel.predict_proba([news])
+    #print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+
+    # News article input
+    #news = 'Spinach is taught how to send emails'
+    #print('\nNews article reads: ', news, '\n')
+
+    # Passive Aggressive Classifier result
+    #result = passAggrModel.predict([news])
+    #conf = passAggrModel.predict_proba([news])
+    #print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Passive Aggressive result is: ', conf[0])
+    #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+    #print("Confidence: ", round(conf[0][0]*100,2), "%")
+
+    # Logic Regression result
+    #result = logicRegModel.predict([news])
+    #conf = logicRegModel.predict_proba([news])
+    #print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+
+    # Decision Tree Classifier result
+    #result = decTreeModel.predict([news])
+    #conf = decTreeModel.predict_proba([news])
+    #print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+    # Random Forest Classifier result
+    #result = randForModel.predict([news])
+    #conf = randForModel.predict_proba([news])
+    #print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+
+    # News article input
+    #news = 'Donald Trump is President'
+    #print('\nNews article reads: ', news, '\n')
+
+    # Passive Aggressive Classifier result
+    #result = passAggrModel.predict([news])
+    #conf = passAggrModel.predict_proba([news])
+    #print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Passive Aggressive result is: ', conf[0])
+    #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+    #print("Confidence: ", round(conf[0][0]*100,2), "%")
+
+    # Logic Regression result
+    #result = logicRegModel.predict([news])
+    #conf = logicRegModel.predict_proba([news])
+    #print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+
+    # Decision Tree Classifier result
+    #result = decTreeModel.predict([news])
+    #conf = decTreeModel.predict_proba([news])
+    #print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+    # Random Forest Classifier result
+    #result = randForModel.predict([news])
+    #conf = randForModel.predict_proba([news])
+    #print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+
+    # News article input
+    #news = 'Donald Trump is a liar'
+    #print('\nNews article reads: ', news, '\n')
+
+    # Passive Aggressive Classifier result
+    #result = passAggrModel.predict([news])
+    #conf = passAggrModel.predict_proba([news])
+    #print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Passive Aggressive result is: ', conf[0])
+    #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+    #print("Confidence: ", round(conf[0][0]*100,2), "%")
+
+    # Logic Regression result
+    #result = logicRegModel.predict([news])
+    #conf = logicRegModel.predict_proba([news])
+    #print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+    #print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
+
+    # Decision Tree Classifier result
+    #result = decTreeModel.predict([news])
+    #conf = decTreeModel.predict_proba([news])
+    #print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+    # Random Forest Classifier result
+    #result = randForModel.predict([news])
+    #conf = randForModel.predict_proba([news])
+    #print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
