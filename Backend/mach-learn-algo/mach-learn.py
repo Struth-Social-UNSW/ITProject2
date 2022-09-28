@@ -20,7 +20,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import feature_extraction, linear_model, model_selection, preprocessing
 from sklearn import metrics
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import PassiveAggressiveClassifier
@@ -404,16 +404,64 @@ def randomForest(x_train, x_test, y_train, y_test):
 
 
 
+###  Naive Bayes Classifier  ###
+def naiveBayes(dataset):
+
+    #dataset['label'].mask(dataset['label'] == 'real', 1, inplace=True)
+    #dataset['label'].mask(dataset['label'] == 'fake', 0, inplace=True)
+
+    # Pre-process data with Vectorizer, pass it text, return bag of words
+    vec = CountVectorizer()
+    
+    # Convert bag of words to dense array for use by model
+    bow = vec.fit_transform(dataset['text'].values)
+    #bow = np.array(bow.todense())
+    bow = bow.toarray()
+
+    # Convert data into occurences
+    #counts = vec.fit_transform(dataset['text'])
+    #transformer = TfidfTransformer().fit(counts)
+    #counts = transformer.transform(counts)
+
+    x = bow
+    y = dataset['label'].values
+
+    # Divide data for training and testing (currently 80:20 - train:test)
+    #x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 42, stratify = y)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 11)
+    #x_train, x_test, y_train, y_test = train_test_split(counts, dataset['label'], test_size = 0.2, random_state = 42)
+
+    # Fit Multinomial Naive Bayes model, train model and predict from the vectors
+    # Multinominal used rather than Gaussian or Bernoulli as it's the best for implementation
+    # in text classification due to abilitiy to maintain number of word occurences in each document.
+    model = MultinomialNB().fit(x_train, y_train)
+
+    # Accuracy
+    predicted = model.predict(x_test)
+
+    # Calculate accuracy of model over testing data
+    print('\n*** Multinominal Naive Bayes Classifier ***')
+    accuracy(y_test, predicted)
+
+    # Display confusion matrix
+    dispConfusionMatrix(y_test, predicted)
+
+
+
+    return model
+
+
+
 ###########################################################################
 
 #####  Main Program  #####
 
 
 # Dataset source
-#dataFile = './kaggle-covid-news.csv'
+dataFile = './kaggle-covid-news.csv'
 #dataFile = './general-news.csv'
 #dataFile = './covid-news.csv'
-dataFile = './general-WELFake.csv'
+#dataFile = './general-WELFake.csv'
 
 # Load and read dataset
 data = read(dataFile)
@@ -434,39 +482,47 @@ passAggrModel = passiveAggressive(x_train, x_test, y_train, y_test)
 logicRegModel = logicRegression(x_train, x_test, y_train, y_test)
 decTreeModel = decisionTree(x_train, x_test, y_train, y_test)
 randForModel = randomForest(x_train, x_test, y_train, y_test)
+naiveBayesModel = naiveBayes(data)
 
 
+##########################################################################
 
 ##  Query Tweet/headline/text for fake news determination on Covid
 
 # News article input
-news = 'covid is hoax'
+news = ['covid is hoax']
 print('\nNews article reads: ', news, '\n')
 
 # Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
+result = passAggrModel.predict(news)
+conf = passAggrModel.predict_proba(news)
 print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 #print('Passive Aggressive result is: ', conf[0])
 #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 #print("Confidence: ", round(conf[0][0]*100,2), "%")
 
 # Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
+result = logicRegModel.predict(news)
+conf = logicRegModel.predict_proba(news)
 print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 #print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 
 # Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
+result = decTreeModel.predict(news)
+conf = decTreeModel.predict_proba(news)
 print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 # Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
+result = randForModel.predict(news)
+conf = randForModel.predict_proba(news)
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
+# Naive Bayes Classifier result
+result = naiveBayesModel.predict([news])
+conf = naiveBayesModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+########################################
 
 # News article input
 news = 'washing your hands regularly is one of the best ways to prevent the spead of coronavirus'
@@ -492,6 +548,12 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
+# Naive Bayes Classifier result
+result = naiveBayesModel.predict([news])
+conf = naiveBayesModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+########################################
 
 # News article input
 news = 'The novel coronavirus outbreak has spread to more than 150 countries or territories around the world'
@@ -517,6 +579,12 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
+# Naive Bayes Classifier result
+result = naiveBayesModel.predict([news])
+conf = naiveBayesModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+########################################
 
 # News article input
 news = 'Coronavirus is only dangerous for old people'
@@ -542,7 +610,13 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
+# Naive Bayes Classifier result
+result = naiveBayesModel.predict([news])
+conf = naiveBayesModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
+
+##########################################################################
 
 
 ##  Query Tweet/headline/text for fake news determination on general news
@@ -575,6 +649,12 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
+# Naive Bayes Classifier result
+result = naiveBayesModel.predict([news])
+conf = naiveBayesModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+########################################
 
 # News article input
 news = 'Spinach is taught how to send emails'
@@ -604,6 +684,12 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
+# Naive Bayes Classifier result
+result = naiveBayesModel.predict([news])
+conf = naiveBayesModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+########################################
 
 # News article input
 news = 'Donald Trump is President'
@@ -633,6 +719,12 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
+# Naive Bayes Classifier result
+result = naiveBayesModel.predict([news])
+conf = naiveBayesModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+########################################
 
 # News article input
 news = 'Donald Trump is a liar'
@@ -660,4 +752,9 @@ print('Decision Tree result is: \t', result[0], ' - with confidence rating of  '
 # Random Forest Classifier result
 result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
+print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+
+# Naive Bayes Classifier result
+result = naiveBayesModel.predict([news])
+conf = naiveBayesModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
