@@ -393,6 +393,7 @@ def randomForest(x_train, x_test, y_train, y_test):
 #####  Main Program  #####
 def Main(InputArray):
     # Dataset source
+    # dataFile = './general-WELFake.csv'
     dataFile = './kaggle-covid-news.csv'
     # dataFile = './general-news.csv'
 
@@ -401,6 +402,9 @@ def Main(InputArray):
 
     # Conduct preprocessing of dataset
     data = preprocess(data)
+
+    #Save preprocessed data to pickle file
+    data.to_pickle("./SavedModelStates/preprocessed_data.pkl")
 
     # Create images/plots of data
     fakeCloud(data)
@@ -439,6 +443,7 @@ if __name__ == '__main__':
     Main(['Covid is a hoax'])
 
     print('\nModel States Successfully Saved!')
+    print('Preprocessed Dataset Successfully Saved!')
 
 
     

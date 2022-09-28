@@ -359,19 +359,23 @@ def randomForest(x_train, x_test, y_train, y_test):
 #####  Main Program  #####
 def Main(InputArray):
     # Dataset source
-    dataFile = './kaggle-covid-news.csv'
+    # dataFile = './general-WELFake.csv'
+    # dataFile = './kaggle-covid-news.csv'
     # dataFile = './general-news.csv'
 
     # Load and read dataset
-    data = read(dataFile)
+    # data = read(dataFile)
 
-    # Conduct preprocessing of dataset
-    data = preprocess(data)
+    # # Conduct preprocessing of dataset
+    # data = preprocess(data)
+
+    # print(type(data))
+    data = pd.read_pickle("./SavedModelStates/preprocessed_data.pkl")
 
     # Create images/plots of data
-    fakeCloud(data)
-    realCloud(data)
-    countWords(data)
+    # fakeCloud(data)
+    # realCloud(data)
+    # countWords(data)
 
     # Prepare data for training and testing
     x_train, x_test, y_train, y_test = prepareData(data)
@@ -393,7 +397,9 @@ def Main(InputArray):
         DecisionTreeClassifierResult = decTreeModel.predict([IndividualInputText])
         RandomForestClassifierResult = randForModel.predict([IndividualInputText])
 
-        ResultsTupple = [IndividualInputText, PassiveAggressiveClassifierResult[0], LogisiticRegressionClassifierResult[0], DecisionTreeClassifierResult[0], RandomForestClassifierResult[0]]
+        ResultsTupple = [IndividualInputText, PassiveAggressiveClassifierResult[0], 
+        LogisiticRegressionClassifierResult[0], DecisionTreeClassifierResult[0], RandomForestClassifierResult[0]]
+        
         Results.append(ResultsTupple)
     
     print(Results) #Debug
@@ -405,88 +411,3 @@ if __name__ == '__main__':
     Main(['Covid is a hoax'])
 
 
-    
-
-
-    # # News article input
-    # news = 'covid is hoax'
-    # print('\nNews article reads: ', news, '\n')
-
-    # # Passive Aggressive Classifier result
-    # result = passAggrModel.predict([news])
-    # print('Passive Aggressive result is: ', result[0])
-
-    # # Logic Regression result
-    # result = logicRegModel.predict([news])
-    # print('Logic Regression result is: ', result[0])
-
-    # # Decision Tree Classifier result
-    # result = decTreeModel.predict([news])
-    # print('Decision Tree result is: ', result[0])
-
-    # # Random Forest Classifier result
-    # result = randForModel.predict([news])
-    # print('Random Forest result is: ', result[0])
-
-
-    # # News article input
-    # news = 'washing your hands regularly is one of the best ways to prevent the spead of coronavirus'
-    # print('\nNews article reads: ', news, '\n')
-
-    # # Passive Aggressive Classifier result
-    # result = passAggrModel.predict([news])
-    # print('Passive Aggressive result is: ', result[0])
-
-    # # Logic Regression result
-    # result = logicRegModel.predict([news])
-    # print('Logic Regression result is: ', result[0])
-
-    # # Decision Tree Classifier result
-    # result = decTreeModel.predict([news])
-    # print('Decision Tree result is: ', result[0])
-
-    # # Random Forest Classifier result
-    # result = randForModel.predict([news])
-    # print('Random Forest result is: ', result[0])
-
-
-    # # News article input
-    # news = 'The novel coronavirus outbreak has spread to more than 150 countries or territories around the world'
-    # print('\nNews article reads: ', news, '\n')
-
-    # # Passive Aggressive Classifier result
-    # result = passAggrModel.predict([news])
-    # print('Passive Aggressive result is: ', result[0])
-
-    # # Logic Regression result
-    # result = logicRegModel.predict([news])
-    # print('Logic Regression result is: ', result[0])
-
-    # # Decision Tree Classifier result
-    # result = decTreeModel.predict([news])
-    # print('Decision Tree result is: ', result[0])
-
-    # # Random Forest Classifier result
-    # result = randForModel.predict([news])
-    # print('Random Forest result is: ', result[0])
-
-
-    # # News article input
-    # news = 'Coronavirus is only dangerous for old people'
-    # print('\nNews article reads: ', news, '\n')
-
-    # # Passive Aggressive Classifier result
-    # result = passAggrModel.predict([news])
-    # print('Passive Aggressive result is: ', result[0])
-
-    # # Logic Regression result
-    # result = logicRegModel.predict([news])
-    # print('Logic Regression result is: ', result[0])
-
-    # # Decision Tree Classifier result
-    # result = decTreeModel.predict([news])
-    # print('Decision Tree result is: ', result[0])
-
-    # # Random Forest Classifier result
-    # result = randForModel.predict([news])
-    # print('Random Forest result is: ', result[0])
