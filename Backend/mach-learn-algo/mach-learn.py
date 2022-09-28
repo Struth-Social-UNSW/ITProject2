@@ -231,7 +231,7 @@ def accuracy(y_test, predicted):
 def plotConfusionMatrix(cm, classes,
                             normalize = False,
                             title = 'Confusion matrix', 
-                            cmap = plt.cm.Blues):
+                            cmap = plt.cm.Blues, nom = ''):
     plt.imshow(cm, interpolation = 'nearest', cmap = cmap)
     plt.title(title)
     plt.colorbar()
@@ -256,7 +256,7 @@ def plotConfusionMatrix(cm, classes,
     plt.tight_layout()
 
     # Saves confusion matrix as jpg
-    plt.savefig('img_confMatrix.jpg')
+    plt.savefig('img_confMatrix_' + nom + '.jpg')
 
     # Displays confusion matrix to the screen
     plt.show()
@@ -264,10 +264,10 @@ def plotConfusionMatrix(cm, classes,
 
 
 ###   Display Confustion Matrix  ###
-def dispConfusionMatrix(y_test, predicted, classifer):
+def dispConfusionMatrix(y_test, predicted, classifer, model):
     print(metrics.confusion_matrix(y_test, predicted))
     cm = metrics.confusion_matrix(y_test, predicted)
-    plotConfusionMatrix(cm, classes=['Fake', 'True'], title = classifer)  ## Uncomment this line to save/display confusion matrix
+    plotConfusionMatrix(cm, classes=['Fake', 'True'], title = classifer, nom = model)  ## Uncomment this line to save/display confusion matrix
 
 
 ###########################################################################
@@ -291,6 +291,7 @@ def prepareData(dataset):
 ###  Passive Aggressive Classifier  ###
 def passiveAggressive(x_train, x_test, y_train, y_test):
     classifier = 'Passiver Aggressive Confusion Matrix'
+    nom = 'PA'
 
     # TFIDF-Vectorizor - text array converted to TF-IDF matrix to define importance of keyword
     # TF (Term Frequency) - number of times a word appears in text
@@ -316,7 +317,7 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
     accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted, classifier)
+    dispConfusionMatrix(y_test, predicted, classifier, nom)
 
     # Pipeline utility function to train and transform data to text data
     pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), ('nbmodel', MultinomialNB())])
@@ -337,6 +338,7 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
 ###  Logistic Regression  ###
 def logicRegression(x_train, x_test, y_train, y_test):
     classifier = 'Logistic Regression Confusion Matrix'
+    nom = 'LR'
 
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
@@ -354,7 +356,7 @@ def logicRegression(x_train, x_test, y_train, y_test):
     accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted, classifier)
+    dispConfusionMatrix(y_test, predicted, classifier, nom)
 
     return model
 
@@ -362,6 +364,7 @@ def logicRegression(x_train, x_test, y_train, y_test):
 ###  Decision Tree Classifier  ###
 def decisionTree(x_train, x_test, y_train, y_test):
     classifier = 'Decision Tree Confusion Matrix'
+    nom = 'DT'
 
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
@@ -382,7 +385,7 @@ def decisionTree(x_train, x_test, y_train, y_test):
     accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted, classifier)
+    dispConfusionMatrix(y_test, predicted, classifier, nom)
 
     return model
 
@@ -390,6 +393,7 @@ def decisionTree(x_train, x_test, y_train, y_test):
 ###  Random Forest Classifier  ###
 def randomForest(x_train, x_test, y_train, y_test):
     classifier = 'Random Forest Confusion Matrix'
+    nom = 'RF'
 
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
@@ -408,7 +412,7 @@ def randomForest(x_train, x_test, y_train, y_test):
     accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted, classifier)
+    dispConfusionMatrix(y_test, predicted, classifier, nom)
 
     return model
 
@@ -419,6 +423,7 @@ def naiveBayes(dataset):
     classifierTdidf = 'Naive Bayes Td-idf Confusion Matrix'
     classifierCount = 'Naive Bayes Count Confusion Matrix'
     classifierSVC = 'Naive Bayes SVC Confusion Matrix'
+    nom = 'NB'
 
     # Create target
     y = dataset['label']
@@ -464,13 +469,13 @@ def naiveBayes(dataset):
     print('\n*** Multinominal Naive Bayes Classifier ***')
     print('\n-- Tdidf')
     accuracy(y_test, tfidf_nb_pred)
-    dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTdidf)
+    dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTdidf, nom)
     print('\n-- Count')
     accuracy(y_test, count_nb_pred)
-    dispConfusionMatrix(y_test, count_nb_pred, classifierCount)
+    dispConfusionMatrix(y_test, count_nb_pred, classifierCount, nom)
     print('\n-- SVC')
     accuracy(y_test, tfidf_svc_pred)
-    dispConfusionMatrix(y_test, count_nb_pred, classifierSVC)
+    dispConfusionMatrix(y_test, count_nb_pred, classifierSVC, nom)
 
    
     
