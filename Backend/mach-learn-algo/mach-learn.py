@@ -29,6 +29,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import LinearSVC
 
 # Import libraries from ntlk
 from nltk.corpus import stopwords
@@ -289,7 +290,7 @@ def prepareData(dataset):
 
 ###  Passive Aggressive Classifier  ###
 def passiveAggressive(x_train, x_test, y_train, y_test):
-    classifier = 'Passiver Aggressive'
+    classifier = 'Passiver Aggressive Confusion Matrix'
 
     # TFIDF-Vectorizor - text array converted to TF-IDF matrix to define importance of keyword
     # TF (Term Frequency) - number of times a word appears in text
@@ -335,7 +336,7 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
 
 ###  Logistic Regression  ###
 def logicRegression(x_train, x_test, y_train, y_test):
-    classifier = 'Logistic Regression'
+    classifier = 'Logistic Regression Confusion Matrix'
 
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
@@ -360,7 +361,7 @@ def logicRegression(x_train, x_test, y_train, y_test):
     
 ###  Decision Tree Classifier  ###
 def decisionTree(x_train, x_test, y_train, y_test):
-    classifier = 'Decision Tree'
+    classifier = 'Decision Tree Confusion Matrix'
 
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
@@ -388,7 +389,7 @@ def decisionTree(x_train, x_test, y_train, y_test):
 
 ###  Random Forest Classifier  ###
 def randomForest(x_train, x_test, y_train, y_test):
-    classifier = 'Random Forest'
+    classifier = 'Random Forest Confusion Matrix'
 
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
@@ -415,8 +416,9 @@ def randomForest(x_train, x_test, y_train, y_test):
 
 ###  Multinominal Naive Bayes Classifier  ###
 def naiveBayes(dataset):
-    classifierTdidf = 'Naive Bayes Td-idf'
-    classifierCount = 'Naive Bayes Count'
+    classifierTdidf = 'Naive Bayes Td-idf Confusion Matrix'
+    classifierCount = 'Naive Bayes Count Confusion Matrix'
+    classifierSVC = 'Naive Bayes SVC Confusion Matrix'
 
     # Create target
     y = dataset['label']
@@ -450,16 +452,31 @@ def naiveBayes(dataset):
     #print('Naive Bayes Tdidf score: ', tfidf_nb_score)
     #print('Naive Bayes Count score: ', count_nb_score)
 
-    # Calculate accuracy of model over testing data
-    print('\n*** Multinominal Naive Bayes Classifier ***')
-    print('Tdidf')
-    accuracy(y_test, tfidf_nb_pred)
-    print('Count')
-    accuracy(y_test, count_nb_pred)
+    # Create Linear SVM model with tf-idf approach, since it is slightly higher
+    tfidf_svc = LinearSVC()
+    tfidf_svc.fit(tfidf_train, y_train)
+    tfidf_svc_pred = tfidf_svc.predict(tfidf_test)
+    tfidf_svc_score = metrics.accuracy_score(y_test, tfidf_svc_pred)
 
-    # Display confusion matrix
+    #print('Naive Bayes SVC score: ', tfidf_svc_score)
+
+    # Calculate accuracy of model over testing data & confusion matrix
+    print('\n*** Multinominal Naive Bayes Classifier ***')
+    print('\n-- Tdidf')
+    accuracy(y_test, tfidf_nb_pred)
     dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTdidf)
+    print('\n-- Count')
+    accuracy(y_test, count_nb_pred)
     dispConfusionMatrix(y_test, count_nb_pred, classifierCount)
+    print('\n-- SVC')
+    accuracy(y_test, tfidf_svc_pred)
+    dispConfusionMatrix(y_test, count_nb_pred, classifierSVC)
+
+   
+    
+    
+
+
 
     #return model
 
