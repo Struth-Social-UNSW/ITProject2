@@ -7,3 +7,5 @@ Backend/mach-learn-algo/general-WELFake.csv
 Backend/mach-learn-algo-integrated/general-WELFake.csv
 Flask_App/general-WELFake.csv
 backend/Training.zip
+backend/text-class/train_test/finetuned_model/old_2/pytorch_model.bin
+backend/text-class/train_test/finetuned_model/old_1/pytorch_model.bin
