@@ -27,4 +27,4 @@ def main(input):
     print(result)
     return(result)
 
-main("Garlic is a popular food for combatting sickness, but it does NOT cure against COVID-19. Garlic is a healthy food with certain antimicrobial properties, but there is no evidence from the current outbreak that eating garlic has protected people from the new coronavirus.")
+main("")
