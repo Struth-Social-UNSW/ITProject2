@@ -4,6 +4,7 @@
 #
 #
 # Import modules
+import re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -490,37 +491,44 @@ naiveBayesModel = naiveBayes(data)
 ##  Query Tweet/headline/text for fake news determination on Covid
 
 # News article input
-news = ['covid is hoax']
+news = 'covid is hoax'
 print('\nNews article reads: ', news, '\n')
 
 # Passive Aggressive Classifier result
-result = passAggrModel.predict(news)
-conf = passAggrModel.predict_proba(news)
+result = passAggrModel.predict([news])
+conf = passAggrModel.predict_proba([news])
 print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 #print('Passive Aggressive result is: ', conf[0])
 #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 #print("Confidence: ", round(conf[0][0]*100,2), "%")
 
 # Logic Regression result
-result = logicRegModel.predict(news)
-conf = logicRegModel.predict_proba(news)
+result = logicRegModel.predict([news])
+conf = logicRegModel.predict_proba([news])
 print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 #print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 
 # Decision Tree Classifier result
-result = decTreeModel.predict(news)
-conf = decTreeModel.predict_proba(news)
+result = decTreeModel.predict([news])
+conf = decTreeModel.predict_proba([news])
 print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 # Random Forest Classifier result
-result = randForModel.predict(news)
-conf = randForModel.predict_proba(news)
+result = randForModel.predict([news])
+conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 # Naive Bayes Classifier result
-result = naiveBayesModel.predict([news])
-conf = naiveBayesModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+#input = [news]
+#vectorizor = CountVectorizer()
+#vecNews = vectorizor.fit_transform(input)
+#vecNews = vectorizor.transform([news]).toarray()
+#vecNews = news.toarray()
+#print(vecNews)
+#naiveBayesModel.fit(vecNews).values
+#result = naiveBayesModel.predict([[vecNews]])
+#conf = naiveBayesModel.predict_proba([vecNews])
+#print('Naive Bayes result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 ########################################
 
@@ -546,11 +554,6 @@ print('Decision Tree result is: \t', result[0], ' - with confidence rating of  '
 # Random Forest Classifier result
 result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Naive Bayes Classifier result
-result = naiveBayesModel.predict([news])
-conf = naiveBayesModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 ########################################
@@ -579,11 +582,6 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-# Naive Bayes Classifier result
-result = naiveBayesModel.predict([news])
-conf = naiveBayesModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
 ########################################
 
 # News article input
@@ -608,11 +606,6 @@ print('Decision Tree result is: \t', result[0], ' - with confidence rating of  '
 # Random Forest Classifier result
 result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Naive Bayes Classifier result
-result = naiveBayesModel.predict([news])
-conf = naiveBayesModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 
@@ -649,11 +642,6 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-# Naive Bayes Classifier result
-result = naiveBayesModel.predict([news])
-conf = naiveBayesModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
 ########################################
 
 # News article input
@@ -682,11 +670,6 @@ print('Decision Tree result is: \t', result[0], ' - with confidence rating of  '
 # Random Forest Classifier result
 result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Naive Bayes Classifier result
-result = naiveBayesModel.predict([news])
-conf = naiveBayesModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 ########################################
@@ -719,11 +702,6 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-# Naive Bayes Classifier result
-result = naiveBayesModel.predict([news])
-conf = naiveBayesModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
 ########################################
 
 # News article input
@@ -754,7 +732,3 @@ result = randForModel.predict([news])
 conf = randForModel.predict_proba([news])
 print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-# Naive Bayes Classifier result
-result = naiveBayesModel.predict([news])
-conf = naiveBayesModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
