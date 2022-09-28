@@ -22,7 +22,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import feature_extraction, linear_model, model_selection, preprocessing
 from sklearn import metrics
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.linear_model import LogisticRegression
@@ -30,6 +30,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import LinearSVC
+from sklearn.neighbors import KNeighborsClassifier
 
 # Import libraries from ntlk
 from nltk.corpus import stopwords
@@ -478,12 +479,25 @@ def naiveBayes(dataset):
     dispConfusionMatrix(y_test, count_nb_pred, classifierSVC, nom)
 
    
+    # Create pipeline
+    pipe = Pipeline(steps = [('tfidf_vectorization', TfidfVectorizer()), ('classifier', MultinomialNB)])
+
+    # Create dictionary with hyperparameters
+    search_space = [{'classifier': [MultinomialNB()]},
+                    {'classifier': [LinearSVC()]},
+                    {'classifier': [PassiveAggressiveClassifier()]},
+                    {'classifier': [LogisticRegression()],'classifier__solver': ['liblinear']},
+                    {'classifier': [KNeighborsClassifier()], 'classifier__n_neighbors': [5,6,7,8]}]
     
-    
+    # Create the GridSearchCV object, Area Under the Receiver Operating Characteristics curve
+    scoring = {'AUC': 'roc_auc', 'Accuracy': metrics.make_scorer(metrics.accuracy_score)}
+    grid = GridSearchCV(estimator = pipe, param_grid=search_space, cv=10, scoring=scoring, return_train_score=True, n_jobs=-1, refit='AUC')
 
+    # Fit GridSearch object
+    best_model = grid.fit(x_train, y_train)
+    print('Best: %f using %s' % (best_model.best_score_, best_model.best_params_))
 
-
-    #return model
+    return best_model
 
 
     
@@ -608,9 +622,10 @@ print('Random Forest result is: \t', result[0], ' - with confidence rating of  '
 #vecNews = news.toarray()
 #print(vecNews)
 #naiveBayesModel.fit(vecNews).values
-#result = naiveBayesModel.predict([[vecNews]])
-#conf = naiveBayesModel.predict_proba([vecNews])
+result = naiveBayesModel.predict([news])
+#conf = naiveBayesModel.predict_proba([news])
 #print('Naive Bayes result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
+print('Naive Bayes result is: \t', result[0])
 
 ########################################
 
