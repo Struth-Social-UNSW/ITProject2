@@ -162,4 +162,8 @@ def preprocmain(input_text):
     twitter_cleaned = twitter_cleaning(input_text)
     general_cleaned = general_cleanup(twitter_cleaned)
     spacy_cleaned = spacy_preproc(general_cleaned)
+    print(spacy_cleaned)
     return spacy_cleaned
+
+input = 'This is a test tweet. It contains a URL: https://www.google.com, a Twitter handle: @breydonvr, a hashtag: #covid, and an emoji: 😂'
+preprocmain(input)
