@@ -263,10 +263,10 @@ def plotConfusionMatrix(cm, classes,
 
 
 ###   Display Confustion Matrix  ###
-def dispConfusionMatrix(y_test, predicted):
+def dispConfusionMatrix(y_test, predicted, classifer):
     print(metrics.confusion_matrix(y_test, predicted))
     cm = metrics.confusion_matrix(y_test, predicted)
-    plotConfusionMatrix(cm, classes=['Fake', 'True'])  ## Uncomment this line to save/display confusion matrix
+    plotConfusionMatrix(cm, classes=['Fake', 'True'], title = classifer)  ## Uncomment this line to save/display confusion matrix
 
 
 ###########################################################################
@@ -289,6 +289,8 @@ def prepareData(dataset):
 
 ###  Passive Aggressive Classifier  ###
 def passiveAggressive(x_train, x_test, y_train, y_test):
+    classifier = 'Passiver Aggressive'
+
     # TFIDF-Vectorizor - text array converted to TF-IDF matrix to define importance of keyword
     # TF (Term Frequency) - number of times a word appears in text
     # IDF (Inverse Document Frequency) - measure of how significant a work is in the entire data
@@ -313,7 +315,7 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
     accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted)
+    dispConfusionMatrix(y_test, predicted, classifier)
 
     # Pipeline utility function to train and transform data to text data
     pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), ('nbmodel', MultinomialNB())])
@@ -333,6 +335,8 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
 
 ###  Logistic Regression  ###
 def logicRegression(x_train, x_test, y_train, y_test):
+    classifier = 'Logistic Regression'
+
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
                         ('tfidf', TfidfTransformer()), 
@@ -349,13 +353,15 @@ def logicRegression(x_train, x_test, y_train, y_test):
     accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted)
+    dispConfusionMatrix(y_test, predicted, classifier)
 
     return model
 
     
 ###  Decision Tree Classifier  ###
 def decisionTree(x_train, x_test, y_train, y_test):
+    classifier = 'Decision Tree'
+
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
                         ('tfidf', TfidfTransformer()), 
@@ -375,13 +381,15 @@ def decisionTree(x_train, x_test, y_train, y_test):
     accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted)
+    dispConfusionMatrix(y_test, predicted, classifier)
 
     return model
 
 
 ###  Random Forest Classifier  ###
 def randomForest(x_train, x_test, y_train, y_test):
+    classifier = 'Random Forest'
+
     # Vectorising and applying TF-IDF
     pipe = Pipeline([('vect', CountVectorizer()),
                         ('tfidf', TfidfTransformer()), 
@@ -399,57 +407,109 @@ def randomForest(x_train, x_test, y_train, y_test):
     accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted)
+    dispConfusionMatrix(y_test, predicted, classifier)
 
     return model
 
 
 
-###  Naive Bayes Classifier  ###
+###  Multinominal Naive Bayes Classifier  ###
 def naiveBayes(dataset):
+    classifierTdidf = 'Naive Bayes Td-idf'
+    classifierCount = 'Naive Bayes Count'
+
+    # Create target
+    y = dataset['label']
+
+    # Divide data for training and testing (currently 80:20 - train:test)
+    x_train, x_test, y_train, y_test = train_test_split(dataset['text'], y, test_size = 0.2, random_state = 11)
+
+    # Pre-process data with CountVectorizer and TfidfVectorizor because ML algorithms only work with numerical data
+    # CountVectorizer creates dictionary with occurrence number of tokens
+    count_vectorizer = CountVectorizer(stop_words='english', min_df = 0.05, max_df = 0.9)
+    count_train = count_vectorizer.fit_transform(x_train, y_train)
+    count_test = count_vectorizer.transform(x_test)
+
+    # TfidfVectorizer creates dictionary with tf-idf values of tokens
+    # It determines the importance of a particular token, if it is common - value will be low, if it is rare - value will be high
+    tfidf_vectorizer = TfidfVectorizer(stop_words = 'english', min_df = 0.05, max_df = 0.7)
+    tfidf_train = tfidf_vectorizer.fit_transform(x_train, y_train)
+    tfidf_test = tfidf_vectorizer.transform(x_test)
+
+    # Create Multinominal Naive Bayes models, train and run predictions
+    tfidf_nb = MultinomialNB()
+    tfidf_nb.fit(tfidf_train, y_train)
+    tfidf_nb_pred = tfidf_nb.predict(tfidf_test)
+    tfidf_nb_score = metrics.accuracy_score(y_test, tfidf_nb_pred)
+
+    count_nb = MultinomialNB()
+    count_nb.fit(count_train, y_train)
+    count_nb_pred = count_nb.predict(count_test)
+    count_nb_score = metrics.accuracy_score(y_test, count_nb_pred)
+
+    #print('Naive Bayes Tdidf score: ', tfidf_nb_score)
+    #print('Naive Bayes Count score: ', count_nb_score)
+
+    # Calculate accuracy of model over testing data
+    print('\n*** Multinominal Naive Bayes Classifier ***')
+    print('Tdidf')
+    accuracy(y_test, tfidf_nb_pred)
+    print('Count')
+    accuracy(y_test, count_nb_pred)
+
+    # Display confusion matrix
+    dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTdidf)
+    dispConfusionMatrix(y_test, count_nb_pred, classifierCount)
+
+    #return model
+
+
+    
+
+    ################
 
     #dataset['label'].mask(dataset['label'] == 'real', 1, inplace=True)
     #dataset['label'].mask(dataset['label'] == 'fake', 0, inplace=True)
 
     # Pre-process data with Vectorizer, pass it text, return bag of words
-    vec = CountVectorizer()
+    #vec = CountVectorizer()
     
     # Convert bag of words to dense array for use by model
-    bow = vec.fit_transform(dataset['text'].values)
+    #bow = vec.fit_transform(dataset['text'].values)
     #bow = np.array(bow.todense())
-    bow = bow.toarray()
+    #bow = bow.toarray()
 
     # Convert data into occurences
     #counts = vec.fit_transform(dataset['text'])
     #transformer = TfidfTransformer().fit(counts)
     #counts = transformer.transform(counts)
 
-    x = bow
-    y = dataset['label'].values
+    #x = bow
+    #y = dataset['label'].values
 
     # Divide data for training and testing (currently 80:20 - train:test)
     #x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 42, stratify = y)
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 11)
+    #x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 11)
     #x_train, x_test, y_train, y_test = train_test_split(counts, dataset['label'], test_size = 0.2, random_state = 42)
 
     # Fit Multinomial Naive Bayes model, train model and predict from the vectors
     # Multinominal used rather than Gaussian or Bernoulli as it's the best for implementation
     # in text classification due to abilitiy to maintain number of word occurences in each document.
-    model = MultinomialNB().fit(x_train, y_train)
+    #model = MultinomialNB().fit(x_train, y_train)
 
     # Accuracy
-    predicted = model.predict(x_test)
+    #predicted = model.predict(x_test)
 
     # Calculate accuracy of model over testing data
-    print('\n*** Multinominal Naive Bayes Classifier ***')
-    accuracy(y_test, predicted)
+    #print('\n*** Multinominal Naive Bayes Classifier ***')
+    #accuracy(y_test, predicted)
 
     # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted)
+    #dispConfusionMatrix(y_test, predicted)
 
 
 
-    return model
+    #return model
 
 
 
@@ -459,10 +519,10 @@ def naiveBayes(dataset):
 
 
 # Dataset source
-#dataFile = './kaggle-covid-news.csv'
+dataFile = './kaggle-covid-news.csv'
 #dataFile = './general-news.csv'
 #dataFile = './covid-news.csv'
-dataFile = './general-WELFake.csv'
+#dataFile = './general-WELFake.csv'
 
 # Load and read dataset
 data = read(dataFile)
@@ -483,7 +543,7 @@ passAggrModel = passiveAggressive(x_train, x_test, y_train, y_test)
 logicRegModel = logicRegression(x_train, x_test, y_train, y_test)
 decTreeModel = decisionTree(x_train, x_test, y_train, y_test)
 randForModel = randomForest(x_train, x_test, y_train, y_test)
-#naiveBayesModel = naiveBayes(data)
+naiveBayesModel = naiveBayes(data)
 
 
 ##########################################################################
