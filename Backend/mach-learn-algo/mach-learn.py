@@ -459,10 +459,10 @@ def naiveBayes(dataset):
 
 
 # Dataset source
-dataFile = './kaggle-covid-news.csv'
+#dataFile = './kaggle-covid-news.csv'
 #dataFile = './general-news.csv'
 #dataFile = './covid-news.csv'
-#dataFile = './general-WELFake.csv'
+dataFile = './general-WELFake.csv'
 
 # Load and read dataset
 data = read(dataFile)
@@ -483,7 +483,7 @@ passAggrModel = passiveAggressive(x_train, x_test, y_train, y_test)
 logicRegModel = logicRegression(x_train, x_test, y_train, y_test)
 decTreeModel = decisionTree(x_train, x_test, y_train, y_test)
 randForModel = randomForest(x_train, x_test, y_train, y_test)
-naiveBayesModel = naiveBayes(data)
+#naiveBayesModel = naiveBayes(data)
 
 
 ##########################################################################
