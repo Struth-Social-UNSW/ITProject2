@@ -1,9 +1,10 @@
-"""dl_preproc_train.py: This program provides the preprocessing facility for the Fake News Detection DL model.3
+"""dl_preproc_train.py: This program provides the preprocessing facility for the Fake News Detection DL model.
 
     Various functions are provided to prepare the data for preprocessing, including:
         -rewritelabels: This function prepares the input for the deep learning model by dummy encoding the labels
         -twitter_cleaning: This function prepares the input for preprocessing by removing Twitter specific data
         -general_cleanup: This function prepares the input for preprocessing by tidying general data
+        -space_cleanup: This function prepares the input for preprocessing by removing additional spaces created during preprocessing preparation
 """
 
 __author__      = "Breydon Verryt-Reid"
