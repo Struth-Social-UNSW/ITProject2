@@ -195,9 +195,9 @@ def preprocmain(training, testing):
     rewritelabels(training, testing)
     
     # Drops the ID axis from the dataframe, not required for DL tasks
-    trg_file = pd.read_csv('./text-class/train_test/trg_data/testrun/train_num.csv')
+    trg_file = pd.read_csv('data_trg_test.csv')
     trg_file = trg_file.drop('id', axis=1)
-    test_file = pd.read_csv('./text-class/train_test/trg_data/testrun/dev_num.csv')
+    test_file = pd.read_csv('data_eval.csv')
     test_file = test_file.drop('id', axis=1)
     print('Beginning Pre-Processing. The test dataset size is: '+str(len(trg_file.index))+' and the training dataset size is: '+str(len(test_file.index)))
     
@@ -229,6 +229,6 @@ def preprocmain(training, testing):
         preproc_data_test = preproc_data_test_up    # updates the dataframe with the newly preprocessed Tweet
     
     # Writing the preprocessed data to CSV files
-    preproc_data_train.to_csv('./text-class/train_test/trg_data/testrun/preproc_data_train.csv', index=False)
+    preproc_data_train.to_csv('preproc_data_trg_test.csv', index=False)
     
-    preproc_data_test.to_csv('./text-class/train_test/trg_data/testrun/preproc_data_test.csv', index=False)
+    preproc_data_test.to_csv('preproc_data_eval.csv', index=False)

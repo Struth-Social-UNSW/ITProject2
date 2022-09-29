@@ -40,7 +40,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 
 notebook_login()    # logs into the Hugging Face Hub
-tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased", model_max_length=128)    # loads the tokenizer
+tokenizer = AutoTokenizer.from_pretrained("digitalepidemiologylab/covid-twitter-bert-v2", model_max_length=128)    # loads the tokenizer
 metric = load_metric('accuracy')    
 model = ""  # creates a global variable for the model
 training_args = ""      # creates a global variable for the training arguments
@@ -74,10 +74,10 @@ def prep():
         ** Returns **
         N/A
     """
-    dataset = load_dataset('csv', data_files="preproc_data_done.csv", split="train").shuffle(seed=42)   # loads the train/test set
+    dataset = load_dataset('csv', data_files="preproc_data_trg_test.csv", split="train").shuffle(seed=42)   # loads the train/test set
     dataset_split = dataset.train_test_split(test_size=0.2)   
 
-    preddataset = load_dataset('csv', data_files="preproc_data_test.csv", split="train")    # loads the separate validation set
+    preddataset = load_dataset('csv', data_files="preproc_data_eval.csv", split="train")    # loads the separate validation set
 
     global predtokens
     predtokens = preddataset.map(tokenize_function, batched=True)   # tokenizes the validation set
@@ -128,7 +128,7 @@ def finetune():
         ** Returns **
         N/A
     """
-    model = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=2)   # creates the model
+    model = AutoModelForSequenceClassification.from_pretrained("digitalepidemiologylab/covid-twitter-bert-v2", num_labels=2)   # creates the model
     training_args = TrainingArguments(  # creates the training arguments
         "bvrau/covid-twitter-bert-v2-struth",
         evaluation_strategy="epoch", # Frequency of evaluating
@@ -138,7 +138,7 @@ def finetune():
         learning_rate=2e-5, # Learning rate
         per_device_train_batch_size=16, # Batch size for training
         per_device_eval_batch_size=16,  # Batch size for evaluation
-        num_train_epochs=50, # could consider doing 10+ epochs
+        num_train_epochs=20, # could consider doing 10+ epochs
         weight_decay=0.01,  # Weight decay
         load_best_model_at_end=True,    # Loads the best model at the end of training
         push_to_hub=True,   # Pushes the model to HuggingFace Hub
@@ -164,7 +164,7 @@ def finetune():
     
 
 def dlmodelmain():
-    """ This function contains the model which takes in a string or list of strings and performs an analysis of that text
+    """ This function contains the model which takes in CSV fies and trains on that text
 
         ** Parameters **
         N/A
@@ -174,7 +174,7 @@ def dlmodelmain():
     """
     # print('Rewriting label values')
     # rewritelabels()
-    print("Beginning prep tasks")
+    print("Beginning prep tasks")   
     prep()
     print("Beginning finetune tasks")
     finetune()
