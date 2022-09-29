@@ -224,7 +224,7 @@ def accuracy(y_test, predicted):
     print("Precision:   measures the proportion of positively predicted labels that are acutualy correct.")
     print("Recall:      represents the model's ability to correctly predict the positives out of actual positives.")
     print("F1 Score:    represents the model score as a function of precision and recall score.")
-    print("Recall:      represents the model's ability to correctly predict the positives out of actual positives.\n")
+    print("Support:     number of actual occurences of the label in the dataset.\n")
     print(metrics.classification_report(y_test, predicted))
 
 
