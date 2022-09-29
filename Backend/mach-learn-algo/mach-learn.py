@@ -321,7 +321,10 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
     dispConfusionMatrix(y_test, predicted, classifier, nom)
 
     # Pipeline utility function to train and transform data to text data
-    pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), ('nbmodel', MultinomialNB())])
+    pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), 
+                            ('model', MultinomialNB())])
+
+    # Fitting the model
     pipeline.fit(x_train, y_train)
 
     # Pickling is process where object heirarchy is converted into a byte stream
@@ -421,9 +424,8 @@ def randomForest(x_train, x_test, y_train, y_test):
 
 ###  Multinominal Naive Bayes Classifier  ###
 def naiveBayes(dataset):
-    classifierTdidf = 'Naive Bayes Td-idf Confusion Matrix'
+    classifierTfidf = 'Naive Bayes Tf-idf Confusion Matrix'
     classifierCount = 'Naive Bayes Count Confusion Matrix'
-    classifierSVC = 'Naive Bayes SVC Confusion Matrix'
     nom = 'NB'
 
     # Create target
@@ -458,95 +460,51 @@ def naiveBayes(dataset):
     #print('Naive Bayes Tdidf score: ', tfidf_nb_score)
     #print('Naive Bayes Count score: ', count_nb_score)
 
-    # Create Linear SVM model with tf-idf approach, since it is slightly higher
+    # Calculate accuracy of model over testing data & confusion matrix
+    print('\n*** Multinominal Naive Bayes Classifier ***')
+    print('\n-- Tf-idf')
+    accuracy(y_test, tfidf_nb_pred)
+    dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTfidf, nom)
+    print('\n-- Count')
+    accuracy(y_test, count_nb_pred)
+    dispConfusionMatrix(y_test, count_nb_pred, classifierCount, nom)
+
+
+
+   
+###  Linear SVC Classifier  ###
+def linearSVC(dataset):
+    classifierSVC = 'Linear SVC Confusion Matrix'
+    nom = 'SVC'
+
+    # Create target
+    y = dataset['label']
+
+    # Divide data for training and testing (currently 80:20 - train:test)
+    x_train, x_test, y_train, y_test = train_test_split(dataset['text'], y, test_size = 0.2, random_state = 11)
+
+    # Pre-process data with CountVectorizer and TfidfVectorizor because ML algorithms only work with numerical data
+    # CountVectorizer creates dictionary with occurrence number of tokens
+    count_vectorizer = CountVectorizer(stop_words='english', min_df = 0.05, max_df = 0.9)
+    count_train = count_vectorizer.fit_transform(x_train, y_train)
+    count_test = count_vectorizer.transform(x_test)
+
+    # TfidfVectorizer creates dictionary with tf-idf values of tokens
+    # It determines the importance of a particular token, if it is common - value will be low, if it is rare - value will be high
+    tfidf_vectorizer = TfidfVectorizer(stop_words = 'english', min_df = 0.05, max_df = 0.7)
+    tfidf_train = tfidf_vectorizer.fit_transform(x_train, y_train)
+    tfidf_test = tfidf_vectorizer.transform(x_test)
+
+    # Create Linear SVM model with tf-idf 
     tfidf_svc = LinearSVC()
     tfidf_svc.fit(tfidf_train, y_train)
     tfidf_svc_pred = tfidf_svc.predict(tfidf_test)
     tfidf_svc_score = metrics.accuracy_score(y_test, tfidf_svc_pred)
 
-    #print('Naive Bayes SVC score: ', tfidf_svc_score)
-
     # Calculate accuracy of model over testing data & confusion matrix
-    print('\n*** Multinominal Naive Bayes Classifier ***')
-    print('\n-- Tdidf')
-    accuracy(y_test, tfidf_nb_pred)
-    dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTdidf, nom)
-    print('\n-- Count')
-    accuracy(y_test, count_nb_pred)
-    dispConfusionMatrix(y_test, count_nb_pred, classifierCount, nom)
-    print('\n-- SVC')
+    print('\n*** Linear SVC Classifier ***')
     accuracy(y_test, tfidf_svc_pred)
-    dispConfusionMatrix(y_test, count_nb_pred, classifierSVC, nom)
-
-   
-    # Create pipeline
-    pipe = Pipeline(steps = [('tfidf_vectorization', TfidfVectorizer()), ('classifier', MultinomialNB)])
-
-    # Create dictionary with hyperparameters
-    search_space = [{'classifier': [MultinomialNB()]},
-                    {'classifier': [LinearSVC()]},
-                    {'classifier': [PassiveAggressiveClassifier()]},
-                    {'classifier': [LogisticRegression()],'classifier__solver': ['liblinear']},
-                    {'classifier': [KNeighborsClassifier()], 'classifier__n_neighbors': [5,6,7,8]}]
-    
-    # Create the GridSearchCV object, Area Under the Receiver Operating Characteristics curve
-    scoring = {'AUC': 'roc_auc', 'Accuracy': metrics.make_scorer(metrics.accuracy_score)}
-    grid = GridSearchCV(estimator = pipe, param_grid=search_space, cv=10, scoring=scoring, return_train_score=True, n_jobs=-1, refit='AUC')
-
-    # Fit GridSearch object
-    best_model = grid.fit(x_train, y_train)
-    print('Best: %f using %s' % (best_model.best_score_, best_model.best_params_))
-
-    return best_model
-
-
-    
-
-    ################
-
-    #dataset['label'].mask(dataset['label'] == 'real', 1, inplace=True)
-    #dataset['label'].mask(dataset['label'] == 'fake', 0, inplace=True)
-
-    # Pre-process data with Vectorizer, pass it text, return bag of words
-    #vec = CountVectorizer()
-    
-    # Convert bag of words to dense array for use by model
-    #bow = vec.fit_transform(dataset['text'].values)
-    #bow = np.array(bow.todense())
-    #bow = bow.toarray()
-
-    # Convert data into occurences
-    #counts = vec.fit_transform(dataset['text'])
-    #transformer = TfidfTransformer().fit(counts)
-    #counts = transformer.transform(counts)
-
-    #x = bow
-    #y = dataset['label'].values
-
-    # Divide data for training and testing (currently 80:20 - train:test)
-    #x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 42, stratify = y)
-    #x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 11)
-    #x_train, x_test, y_train, y_test = train_test_split(counts, dataset['label'], test_size = 0.2, random_state = 42)
-
-    # Fit Multinomial Naive Bayes model, train model and predict from the vectors
-    # Multinominal used rather than Gaussian or Bernoulli as it's the best for implementation
-    # in text classification due to abilitiy to maintain number of word occurences in each document.
-    #model = MultinomialNB().fit(x_train, y_train)
-
-    # Accuracy
-    #predicted = model.predict(x_test)
-
-    # Calculate accuracy of model over testing data
-    #print('\n*** Multinominal Naive Bayes Classifier ***')
-    #accuracy(y_test, predicted)
-
-    # Display confusion matrix
-    #dispConfusionMatrix(y_test, predicted)
-
-
-
-    #return model
-
+    dispConfusionMatrix(y_test, tfidf_svc_pred, classifierSVC, nom)
 
 
 ###########################################################################
@@ -580,6 +538,7 @@ logicRegModel = logicRegression(x_train, x_test, y_train, y_test)
 decTreeModel = decisionTree(x_train, x_test, y_train, y_test)
 randForModel = randomForest(x_train, x_test, y_train, y_test)
 naiveBayesModel = naiveBayes(data)
+linearSVCModel = linearSVC(data)
 
 
 ##########################################################################
@@ -622,10 +581,10 @@ print('Random Forest result is: \t', result[0], ' - with confidence rating of  '
 #vecNews = news.toarray()
 #print(vecNews)
 #naiveBayesModel.fit(vecNews).values
-result = naiveBayesModel.predict([news])
+#result = naiveBayesModel.predict([news])
 #conf = naiveBayesModel.predict_proba([news])
 #print('Naive Bayes result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-print('Naive Bayes result is: \t', result[0])
+#print('Naive Bayes result is: \t', result[0])
 
 ########################################
 

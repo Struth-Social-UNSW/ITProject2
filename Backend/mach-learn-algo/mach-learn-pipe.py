@@ -340,9 +340,10 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
 
 ###  Multinominal Naive Bayes Classifier  ###
 def naiveBayes(dataset):
-    classifierTdidf = 'Naive Bayes Td-idf Confusion Matrix'
+    classifierTfidf = 'Naive Bayes Td-idf Confusion Matrix'
     classifierCount = 'Naive Bayes Count Confusion Matrix'
     classifierSVC = 'Naive Bayes SVC Confusion Matrix'
+    classifierBest = 'TF-IDF Best Model Confusion Matrix'
     nom = 'NB'
 
     # Create target
@@ -387,9 +388,9 @@ def naiveBayes(dataset):
 
     # Calculate accuracy of model over testing data & confusion matrix
     print('\n*** Multinominal Naive Bayes Classifier ***')
-    print('\n-- Tdidf')
+    print('\n-- Tf-idf')
     accuracy(y_test, tfidf_nb_pred)
-    dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTdidf, nom)
+    dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTfidf, nom)
     print('\n-- Count')
     accuracy(y_test, count_nb_pred)
     dispConfusionMatrix(y_test, count_nb_pred, classifierCount, nom)
@@ -405,16 +406,28 @@ def naiveBayes(dataset):
     search_space = [{'classifier': [MultinomialNB()]},
                     {'classifier': [LinearSVC()]},
                     {'classifier': [PassiveAggressiveClassifier()]},
+                    {'classifier': [LogisticRegression()]},
+                    {'classifier': [DecisionTreeClassifier()]},
+                    {'classifier': [RandomForestClassifier()]},
                     {'classifier': [LogisticRegression()],'classifier__solver': ['liblinear']},
                     {'classifier': [KNeighborsClassifier()], 'classifier__n_neighbors': [5,6,7,8]}]
     
-    # Create the GridSearchCV object, Area Under the Receiver Operating Characteristics curve
+    # Create the GridSearchCV object, Area Under the Curve of the Receiver Operating Characteristics curve
     scoring = {'AUC': 'roc_auc', 'Accuracy': metrics.make_scorer(metrics.accuracy_score)}
     grid = GridSearchCV(estimator = pipe, param_grid=search_space, cv=10, scoring=scoring, return_train_score=True, n_jobs=-1, refit='AUC')
 
     # Fit GridSearch object
     best_model = grid.fit(x_train, y_train)
     print('Best: %f using %s' % (best_model.best_score_, best_model.best_params_))
+
+    best_model_pred = best_model.predict(x_test)
+
+    # Calculate accuracy of model over testing data & confusion matrix
+    print('\n*** TF-IDF Best Model ***')
+
+    accuracy(y_test, best_model_pred)
+    dispConfusionMatrix(y_test, best_model_pred, classifierBest, 'BEST-TF-IDF')
+    
 
     return best_model
 
@@ -431,10 +444,10 @@ def naiveBayes(dataset):
 
 
 # Dataset source
-#dataFile = './kaggle-covid-news.csv'
+dataFile = './kaggle-covid-news.csv'
 #dataFile = './general-news.csv'
 #dataFile = './covid-news.csv'
-dataFile = './general-WELFake.csv'
+#dataFile = './general-WELFake.csv'
 
 # Load and read dataset
 data = read(dataFile)
