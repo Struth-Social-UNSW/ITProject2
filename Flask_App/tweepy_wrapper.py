@@ -27,10 +27,11 @@ def RecentTweetsWrapper(Query: str):
     # Each Tweet object has default ID and text fields
     formatted_tweets = []
 
-    for tweet in tweets:
-        author_username = ResolveAuthorUsernameFromID(tweet.author_id)
-        tweet_data = (tweet.id, tweet.text, author_username)
-        formatted_tweets.append(tweet_data)
+    if tweets:
+        for tweet in tweets:
+            author_username = ResolveAuthorUsernameFromID(tweet.author_id)
+            tweet_data = (tweet.id, tweet.text, author_username)
+            formatted_tweets.append(tweet_data)
 
         # print(f'{tweet.id} {tweet.text} {tweet.author_id}')
 
@@ -55,7 +56,7 @@ def ResolveAuthorUsernameFromID(ID):
 
 
 if __name__ == "__main__":
-    ReturnedTweets = RecentTweetsWrapper("Covid")
+    ReturnedTweets = RecentTweetsWrapper("dwhjdhwadj")
     for i in ReturnedTweets:
         print(i)
     print('###########################')
