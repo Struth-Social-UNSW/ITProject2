@@ -1,0 +1,18 @@
+{
+    "finetune_datasets": [
+        "kaggle_twitter_news"
+    ],
+    "model_class": "bert_large_uncased_wwm",
+    "run_prefix": "test_run",
+    "max_seq_length": 96,
+    "username_filler": "twitteruser",
+    "url_filler": "twitterurl",
+    "replace_usernames": true,
+    "replace_urls": true,
+    "asciify_emojis": true,
+    "replace_multiple_usernames": true,
+    "replace_multiple_urls": true,
+    "standardize_punctuation": true,
+    "remove_unicode_symbols": true,
+    "remove_accented_characters": false
+}
