@@ -43,6 +43,9 @@ Issues will be tracked on Trello
 ### For the backend
   - Inside the backend folder, open a terminal window. Then run the command: 
   - pip install -r requirements.txt
+  - After running the install, you'll also need to run the command:
+  - spacy download en
+  - This will ensure you are able to run preprocessing tasks with the required dataset
 
 ## Front-end
 
