@@ -513,10 +513,11 @@ def linearSVC(dataset):
 
 
 # Dataset source
-dataFile = './kaggle-covid-news.csv'
+#dataFile = './kaggle-covid-news.csv'
 #dataFile = './general-news.csv'
 #dataFile = './covid-news.csv'
 #dataFile = './general-WELFake.csv'
+dataFile = './preproc_combo.csv'
 
 # Load and read dataset
 data = read(dataFile)
