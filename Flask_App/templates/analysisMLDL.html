@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Fake News Detection</title>
+	<link rel="icon" type="image/x-icon" href="/static/StruthSocial_Icon.jpg">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+		<!--	styling for table-->
+		<style>
+			.navbar {
+				z-index: 10;
+				background-color: #F8F9FA;
+				position: fixed;
+				width: 100%;
+			}
+	
+			/* The sidebar menu */
+			.sidenav {
+				height: 100%;
+				width: 160px;
+				position: fixed;
+				z-index: 0;
+				top: 0;
+				background-color: #F8F9FA;
+				padding-top: 80px;
+			}
+	
+			/* The navigation menu links */
+			.sidenav a {
+				padding: 6px 8px 6px 16px;
+				text-decoration: none;
+				font-size: 16px;
+				color: #707071;
+				display: block;
+			}
+	
+			/* When you mouse over the navigation links, change their color */
+			.sidenav a:hover {
+				color: #4A4A4A;
+			}
+	
+			.content {
+				padding-left: 160px;
+			}
+
+			table {
+				width: 100%;
+				border-spacing: 30px;
+			}
+
+			tr,td {
+				padding: 10px;
+				padding-left: 20px;
+				padding-right: 10px;
+				border-bottom: 1px solid #ddd;
+			}
+			
+			tr.images {
+				text-align: center;
+				padding-bottom: 100px;
+			}
+			td.images {
+				width: 25%;
+				padding:0%;
+			}
+		</style>
+</head>
+
+<body>
+	<!--Nav Bar-->
+	<nav class="navbar navbar-expand-lg navbar-light">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/">STRUTH SOCIAL FAKE NEWS DETECTION</a>
+			<div class="nav navbar-nav navbar-right" id="navbarNavAltMarkup">
+				<div class="navbar-nav">
+					<a class="nav-link" href="/">Home</a>
+					<a class="nav-link" href="/about">About Us</a>
+					<a class="nav-link" target="_blank"
+						href="https://github.com/Struth-Social-UNSW/ITProject2">GitHub</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<!-- Side navigation -->
+	<div class="sidenav">
+		<div class="nav"  id="navbarNavAltMarkup">
+			<a href="/rawTextML">Raw Text Input ML</a>
+			<a href="/twitterML">Twitter Lookup ML</a>
+			<a href="/rawTextMLDL">Raw Text Input ML+DL</a>
+			<a href="/twitterMLDL">Twitter Lookup ML+DL</a>
+		</div>
+	</div>
+	<br>
+	<div class="content">
+		<br>
+		<br>
+		<div class='container-fluid'>
+			<table>
+				<!-- Table headers -->
+				<tr style="font-weight:bold">
+					<td width="60%">Input</td>
+					<td width="1%">Passive Aggressive Result</td>
+					<td width="1%">%</td>
+					<td width="1%">Logisitic Regression Result</td>
+					<td width="1%">%</td>
+					<td width="1%">Decision Tree Result</td>
+					<td width="1%">%</td>
+					<td width="1%">Random Forest Result</td>
+					<td width="1%">%</td>
+					<td width="1%">Deep Learning Result</td>
+					<td width="1%">%</td>
+				</tr>
+				<!-- For loop logic of jinja template -->
+				{%for i in passedTweets%}
+				<!-- table rows -->
+				<tr>
+					<td>{{i[0]}}</td>
+					<td>{{i[1]}}</td>
+					<td>{{i[5][0]}}</td>
+					<td>{{i[2]}}</td>
+					<td>{{i[5][1]}}</td>
+					<td>{{i[3]}}</td>
+					<td>{{i[5][2]}}</td>
+					<td>{{i[4]}}</td>
+					<td>{{i[5][3]}}</td>
+					<td>{{i[6][0]}}</td>
+					<td>{{i[6][1]}}</td>
+				</tr>
+				{%endfor%}
+			</table>
+		</div>
+			<table>
+				<tr class = "images"><td></td><td></td><td></td><td></td></tr>
+				<tr class = "images" style="font-weight:bold">
+					<td width="25%">Confusion Matrix</td>
+					<td width="25%">Real Word Cloud</td>
+					<td width="25%">Fake Word Cloud</td>
+					<td width="25%">Word Frequency</td>
+				</tr>
+				<tr class="images">
+					<td class="images"><a href="/static/img_confMatrix.jpg"><img src="/static/img_confMatrix.jpg" width="100%"></a></td>
+					<td class="images"><a href="/static/img_realCloud.jpg"><img src="/static/img_realCloud.jpg" width="100%"></a></td>
+					<td class="images"><a href="/static/img_fakeCloud.jpg"><img src="/static/img_fakeCloud.jpg" width="100%"></a></td>
+					<td class="images"><a href="/static/img_freqWords.jpg"><img src="/static/img_freqWords.jpg" width="100%"></a></td>
+				</tr>
+			</table>
+			<br>
+			<br>
+			<br>
+	</div>
+</body>
+
+</html>
