@@ -418,11 +418,11 @@ def DeepLearning(input):
     resultdict = result[0]
     label = resultdict['label']
     score = resultdict['score']
-    RoundedScore = round(score,2)
+    RoundedScore = round(score,2)*100
     # print("** Results **")
     # print("Determination: "+ label)
     # print("Certainty: "+str(score)) 
-    DLResults = (label, str(RoundedScore))
+    DLResults = (label, (f'{str(RoundedScore)}%'))
 
     return DLResults
 

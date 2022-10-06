@@ -16,6 +16,31 @@
 						checkboxes[i].checked = source.checked;
 				}
 			}
+			function FadeAndShowLoadingGif() {
+				var form = document.getElementById('TwitterResultsSelectionForm');
+				var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+				var Checked = 0
+				for (var i = 0; i < checkboxes.length; i++) {
+					if (checkboxes[i].checked == 1) {
+						Checked = 1
+					}
+				}
+				if (Checked == 0) {
+					alert('You must select at least one Tweet to analyse!');
+					event.preventDefault();
+					event.stopPropagation();
+				} else {
+					var x = document.getElementById("loading");
+					if (x.style.display === "none") {
+						x.style.display = "block";
+					} else {
+						x.style.display = "none";
+					}
+					document.getElementById("TwitterResultsSelection").style.opacity = "0.5"
+					document.getElementById("TwitterResultsSelection").style.opacity = "0.5"
+					document.getElementById("TwitterSearch").style.opacity = "0.5"
+					}
+				}
 		</script>
 		<style>
 			table {
@@ -69,6 +94,12 @@
 			.content {
 				padding-left: 160px;
 			}
+			.center {
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+				width: 10%;
+			}
 		</style>
 </head>
 
@@ -99,7 +130,7 @@
 	<br>
 	<div class="content">
 		<!--	form for text input-->
-		<div class='container'>
+		<div id="TwitterSearch" class='container'>
 			<form action="{{ url_for('twitterMLDL') }}" method="POST">
 				<div class="col-three-forth text-center col-md-offset-2">
 					<div class="form-group">
@@ -120,10 +151,10 @@
 		{% if tweets %}
 		{% if divShown == True %}
 		<!--	table to print results-->
-		<div class='container'>
+		<div id="TwitterResultsSelection" class='container'>
 			<p><b>Warning!</b> To minimise inaccuracies, this application provides no content filtering</p>
 			<p>Latest Tweets for: <b>{{searchTopic}}</b></p>
-			<form action="{{ url_for('twitterMLDL') }}" method="POST">
+			<form id="TwitterResultsSelectionForm" action="{{ url_for('twitterMLDL') }}" onsubmit="FadeAndShowLoadingGif()" method="POST">
 				<table class="table1">
 					<!-- Table headers -->
 					<tr style="font-weight:bold">
@@ -164,6 +195,7 @@
 				</table>
 			</form>
 		</div>
+		<img class="center" style="display: none" id="loading" src="./static/loading.gif">
 		<br><br><br><br>
 		{% endif %}
 		{% else %}

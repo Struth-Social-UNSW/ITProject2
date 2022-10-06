@@ -79,6 +79,7 @@ def rawTextMLDL():
 # for passing variables from form to script
 @app.route('/rawTextMLDL', methods=['POST'])
 def webappMLDL():
+    print("debug")
     searchInput = []
     searchInput.append(request.form['searchInput'])
     session['selectedTweets'] = searchInput
