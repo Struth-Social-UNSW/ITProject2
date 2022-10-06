@@ -95,7 +95,8 @@ def preprocess(dataset):
 
     # Remove any rows with null values 
     dataset.dropna(inplace = True)
-    #print('\nDataset.head: \n', dataset.head())
+
+    print('\nDataset.head: \n', dataset.head())
 
     # Convert to lowercase
     #dataset['title'] = dataset['title'].apply(lambda x: x.lower())
@@ -106,6 +107,11 @@ def preprocess(dataset):
     #dataset['title'] = dataset['title'].apply(punctuation_removal)
     dataset['text'] = dataset['text'].apply(punctuation_removal)
     #print('\nDataset.head: \n', dataset.head())
+
+    # Remove URL starting with 'http' or 'https', special characters and tags
+    #dataset['text'] = dataset['text'].str.replace(r's*https?://S+(s+|$)', ' ').str.strip()
+    dataset['text'] = dataset['text'].str.replace('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', ' ')
+    dataset['text'] = dataset['text'].str.replace(r"[\"\'\|\?\=\.\<\>\@\#\*\{\}\_\,]", '')
 
     # Remove emojis
     filter_char = lambda c: ord(c) < 256
@@ -289,115 +295,12 @@ def prepareData(dataset):
 #####  Classifiers  #####
 
 
-###  Passive Aggressive Classifier  ###
-def passiveAggressive(x_train, x_test, y_train, y_test):
-    classifier = 'Passiver Aggressive Confusion Matrix'
-    nom = 'PA'
-
-    # TFIDF-Vectorizor - text array converted to TF-IDF matrix to define importance of keyword
-    # TF (Term Frequency) - number of times a word appears in text
-    # IDF (Inverse Document Frequency) - measure of how significant a work is in the entire data
-    tfidf_vectorizer = TfidfVectorizer(stop_words = 'english', max_df = 0.7)
-    tfidf_train = tfidf_vectorizer.fit_transform(x_train)
-    tfidf_test = tfidf_vectorizer.transform(x_test)
-
-    # Passive Agressive Classifier - is an online learning alogorithm which remains passive for a correct classification and turns aggressive for miscalculations.
-    # It updates loss after each iteration and changes weight vector
-    #pipe = PassiveAggressiveClassifier(max_iter = 50)
-    model = PassiveAggressiveClassifier(max_iter = 50)
-
-    # Fitting the model
-    #model = pipe.fit(tfidf_train, y_train)
-    model.fit(tfidf_train, y_train)
-
-    # Predictions about testing data
-    predicted = model.predict(tfidf_test)
-
-    # Calculate accuracy of model over testing data
-    print('\n*** Passive Aggressive Classifier ***')
-    accuracy(y_test, predicted)
-
-    # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted, classifier, nom)
-
-    # Pipeline utility function to train and transform data to text data
-    pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), ('nbmodel', MultinomialNB())])
-    pipeline.fit(x_train, y_train)
-
-    # Pickling is process where object heirarchy is converted into a byte stream
-    # Serialize an object hierarchy
-    with open('model.pkl', 'wb') as handle:
-        pickle.dump(pipeline, handle, protocol = pickle.HIGHEST_PROTOCOL)
+###  Pipeline and GridSearch Classifier  ###
+def pipeGrid(dataset):
     
-    # De-serialize data stream
-    with open('model.pkl', 'rb') as handle:
-        model = pickle.load(handle)
-
-    return model
-
-
-
-
-###  Multinominal Naive Bayes Classifier  ###
-def naiveBayes(dataset):
-    classifierTfidf = 'Naive Bayes Td-idf Confusion Matrix'
-    classifierCount = 'Naive Bayes Count Confusion Matrix'
-    classifierSVC = 'Naive Bayes SVC Confusion Matrix'
     classifierBest = 'TF-IDF Best Model Confusion Matrix'
-    nom = 'NB'
-
-    # Create target
-    y = dataset['label']
-
-    # Divide data for training and testing (currently 80:20 - train:test)
-    x_train, x_test, y_train, y_test = train_test_split(dataset['text'], y, test_size = 0.2, random_state = 11)
-
-    # Pre-process data with CountVectorizer and TfidfVectorizor because ML algorithms only work with numerical data
-    # CountVectorizer creates dictionary with occurrence number of tokens
-    count_vectorizer = CountVectorizer(stop_words='english', min_df = 0.05, max_df = 0.9)
-    count_train = count_vectorizer.fit_transform(x_train, y_train)
-    count_test = count_vectorizer.transform(x_test)
-
-    # TfidfVectorizer creates dictionary with tf-idf values of tokens
-    # It determines the importance of a particular token, if it is common - value will be low, if it is rare - value will be high
-    tfidf_vectorizer = TfidfVectorizer(stop_words = 'english', min_df = 0.05, max_df = 0.7)
-    tfidf_train = tfidf_vectorizer.fit_transform(x_train, y_train)
-    tfidf_test = tfidf_vectorizer.transform(x_test)
-
-    # Create Multinominal Naive Bayes models, train and run predictions
-    tfidf_nb = MultinomialNB()
-    tfidf_nb.fit(tfidf_train, y_train)
-    tfidf_nb_pred = tfidf_nb.predict(tfidf_test)
-    tfidf_nb_score = metrics.accuracy_score(y_test, tfidf_nb_pred)
-
-    count_nb = MultinomialNB()
-    count_nb.fit(count_train, y_train)
-    count_nb_pred = count_nb.predict(count_test)
-    count_nb_score = metrics.accuracy_score(y_test, count_nb_pred)
-
-    #print('Naive Bayes Tdidf score: ', tfidf_nb_score)
-    #print('Naive Bayes Count score: ', count_nb_score)
-
-    # Create Linear SVM model with tf-idf approach, since it is slightly higher
-    tfidf_svc = LinearSVC()
-    tfidf_svc.fit(tfidf_train, y_train)
-    tfidf_svc_pred = tfidf_svc.predict(tfidf_test)
-    tfidf_svc_score = metrics.accuracy_score(y_test, tfidf_svc_pred)
-
-    #print('Naive Bayes SVC score: ', tfidf_svc_score)
-
-    # Calculate accuracy of model over testing data & confusion matrix
-    print('\n*** Multinominal Naive Bayes Classifier ***')
-    print('\n-- Tf-idf')
-    accuracy(y_test, tfidf_nb_pred)
-    dispConfusionMatrix(y_test, tfidf_nb_pred, classifierTfidf, nom)
-    print('\n-- Count')
-    accuracy(y_test, count_nb_pred)
-    dispConfusionMatrix(y_test, count_nb_pred, classifierCount, nom)
-    print('\n-- SVC')
-    accuracy(y_test, tfidf_svc_pred)
-    dispConfusionMatrix(y_test, count_nb_pred, classifierSVC, nom)
-
+ 
+    print('\n***  Pipeline and GridSearch  ***')
    
     # Create pipeline
     pipe = Pipeline(steps = [('tfidf_vectorization', TfidfVectorizer()), ('classifier', MultinomialNB)])
@@ -414,7 +317,7 @@ def naiveBayes(dataset):
     
     # Create the GridSearchCV object, Area Under the Curve of the Receiver Operating Characteristics curve
     scoring = {'AUC': 'roc_auc', 'Accuracy': metrics.make_scorer(metrics.accuracy_score)}
-    grid = GridSearchCV(estimator = pipe, param_grid=search_space, cv=10, scoring=scoring, return_train_score=True, n_jobs=-1, refit='AUC')
+    grid = GridSearchCV(estimator = pipe, param_grid = search_space, cv = 10, scoring = scoring, return_train_score = True, n_jobs = -1, refit = 'AUC')
 
     # Fit GridSearch object
     best_model = grid.fit(x_train, y_train)
@@ -448,6 +351,7 @@ dataFile = './kaggle-covid-news.csv'
 #dataFile = './general-news.csv'
 #dataFile = './covid-news.csv'
 #dataFile = './general-WELFake.csv'
+#dataFile = './preproc_combo.csv'
 
 # Load and read dataset
 data = read(dataFile)
@@ -464,8 +368,7 @@ countWords(data)
 x_train, x_test, y_train, y_test = prepareData(data)
 
 # Execute Classifiers
-passAggrModel = passiveAggressive(x_train, x_test, y_train, y_test)
-naiveBayesModel = naiveBayes(data)
+pipeGridModel = pipeGrid(data)
 
 
 ##########################################################################
@@ -476,27 +379,11 @@ naiveBayesModel = naiveBayes(data)
 news = 'covid is hoax'
 print('\nNews article reads: ', news, '\n')
 
-# Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
-print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Passive Aggressive result is: ', conf[0])
-#print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-#print("Confidence: ", round(conf[0][0]*100,2), "%")
-
-
-# Naive Bayes Classifier result
-#input = [news]
-#vectorizor = CountVectorizer()
-#vecNews = vectorizor.fit_transform(input)
-#vecNews = vectorizor.transform([news]).toarray()
-#vecNews = news.toarray()
-#print(vecNews)
-#naiveBayesModel.fit(vecNews).values
-result = naiveBayesModel.predict([news])
+# Pipeline GridSearch result
+result = pipeGridModel.predict([news])
 #conf = naiveBayesModel.predict_proba([news])
 #print('Naive Bayes result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-print('Naive Bayes result is: \t', result[0])
+print('Pipeline GridSearch result is: \t', result[0])
 
 ########################################
 
@@ -504,11 +391,9 @@ print('Naive Bayes result is: \t', result[0])
 news = 'washing your hands regularly is one of the best ways to prevent the spead of coronavirus'
 print('\nNews article reads: ', news, '\n')
 
-# Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
-print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
+# Pipeline GridSearch result
+result = pipeGridModel.predict([news])
+print('Pipeline GridSearch result is: \t', result[0])
 
 ########################################
 
@@ -516,11 +401,9 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 news = 'The novel coronavirus outbreak has spread to more than 150 countries or territories around the world'
 print('\nNews article reads: ', news, '\n')
 
-# Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
-print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
+# Pipeline GridSearch result
+result = pipeGridModel.predict([news])
+print('Pipeline GridSearch result is: \t', result[0])
 
 ########################################
 
@@ -528,11 +411,9 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 news = 'Coronavirus is only dangerous for old people'
 print('\nNews article reads: ', news, '\n')
 
-# Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
-print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
+# Pipeline GridSearch result
+result = pipeGridModel.predict([news])
+print('Pipeline GridSearch result is: \t', result[0])
 
 ##########################################################################
 
@@ -543,13 +424,9 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 news = 'NASA is installing internet on the moon'
 print('\nNews article reads: ', news, '\n')
 
-# Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
-print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Passive Aggressive result is: ', conf[0])
-#print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-#print("Confidence: ", round(conf[0][0]*100,2), "%")
+# Pipeline GridSearch result
+result = pipeGridModel.predict([news])
+print('Pipeline GridSearch result is: \t', result[0])
 
 
 ########################################
@@ -558,13 +435,9 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 news = 'Spinach is taught how to send emails'
 print('\nNews article reads: ', news, '\n')
 
-# Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
-print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Passive Aggressive result is: ', conf[0])
-#print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-#print("Confidence: ", round(conf[0][0]*100,2), "%")
+# Pipeline GridSearch result
+result = pipeGridModel.predict([news])
+print('Pipeline GridSearch result is: \t', result[0])
 
 
 ########################################
@@ -573,13 +446,9 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 news = 'Donald Trump is President'
 print('\nNews article reads: ', news, '\n')
 
-# Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
-print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Passive Aggressive result is: ', conf[0])
-#print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-#print("Confidence: ", round(conf[0][0]*100,2), "%")
+# Pipeline GridSearch result
+result = pipeGridModel.predict([news])
+print('Pipeline GridSearch result is: \t', result[0])
 
 
 ########################################
@@ -588,12 +457,8 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 news = 'Donald Trump is a liar'
 print('\nNews article reads: ', news, '\n')
 
-# Passive Aggressive Classifier result
-result = passAggrModel.predict([news])
-conf = passAggrModel.predict_proba([news])
-print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Passive Aggressive result is: ', conf[0])
-#print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-#print("Confidence: ", round(conf[0][0]*100,2), "%")
+# Pipeline GridSearch result
+result = pipeGridModel.predict([news])
+print('Pipeline GridSearch result is: \t', result[0])
 
 

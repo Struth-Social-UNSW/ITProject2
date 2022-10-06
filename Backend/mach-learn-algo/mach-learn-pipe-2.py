@@ -327,10 +327,7 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
     dispConfusionMatrix(y_test, predicted, classifier, nom)
 
     # Pipeline utility function to train and transform data to text data
-    pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), 
-                            ('model', MultinomialNB())])
-
-    # Fitting the model
+    pipeline = Pipeline([('tfidf', TfidfVectorizer(stop_words = 'english')), ('nbmodel', MultinomialNB())])
     pipeline.fit(x_train, y_train)
 
     # Pickling is process where object heirarchy is converted into a byte stream
@@ -345,93 +342,14 @@ def passiveAggressive(x_train, x_test, y_train, y_test):
     return model
 
 
-###  Logistic Regression  ###
-def logicRegression(x_train, x_test, y_train, y_test):
-    classifier = 'Logistic Regression Confusion Matrix'
-    nom = 'LR'
-
-    # Vectorising and applying TF-IDF
-    pipe = Pipeline([('vect', CountVectorizer()),
-                        ('tfidf', TfidfTransformer()), 
-                        ('model', LogisticRegression())])
-
-    # Fitting the model
-    model = pipe.fit(x_train, y_train)
-
-    # Accuracy
-    predicted = model.predict(x_test)
-
-    # Calculate accuracy of model over testing data
-    print('\n*** Logistic regression ***')
-    accuracy(y_test, predicted)
-
-    # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted, classifier, nom)
-
-    return model
-
-    
-###  Decision Tree Classifier  ###
-def decisionTree(x_train, x_test, y_train, y_test):
-    classifier = 'Decision Tree Confusion Matrix'
-    nom = 'DT'
-
-    # Vectorising and applying TF-IDF
-    pipe = Pipeline([('vect', CountVectorizer()),
-                        ('tfidf', TfidfTransformer()), 
-                        ('model', DecisionTreeClassifier(criterion= 'entropy',
-                                                                    max_depth=20,
-                                                                    splitter='best',
-                                                                    random_state=42))])
-
-    # Fitting the model
-    model = pipe.fit(x_train, y_train)
-
-    # Accuracy
-    predicted = model.predict(x_test)
-
-    # Calculate accuracy of model over testing data
-    print('\n*** Decision Tree Classifier ***')
-    accuracy(y_test, predicted)
-
-    # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted, classifier, nom)
-
-    return model
-
-
-###  Random Forest Classifier  ###
-def randomForest(x_train, x_test, y_train, y_test):
-    classifier = 'Random Forest Confusion Matrix'
-    nom = 'RF'
-
-    # Vectorising and applying TF-IDF
-    pipe = Pipeline([('vect', CountVectorizer()),
-                        ('tfidf', TfidfTransformer()), 
-                        ('model', RandomForestClassifier(n_estimators=50,
-                                                                    criterion='entropy'))])
-
-    # Fitting the model
-    model = pipe.fit(x_train, y_train)
-
-    # Accuracy
-    predicted = model.predict(x_test)
-
-    # Calculate accuracy of model over testing data
-    print('\n*** Random Forest Classifier ***')
-    accuracy(y_test, predicted)
-
-    # Display confusion matrix
-    dispConfusionMatrix(y_test, predicted, classifier, nom)
-
-    return model
-
 
 
 ###  Multinominal Naive Bayes Classifier  ###
 def naiveBayes(dataset):
-    classifierTfidf = 'Naive Bayes Tf-idf Confusion Matrix'
+    classifierTfidf = 'Naive Bayes Td-idf Confusion Matrix'
     classifierCount = 'Naive Bayes Count Confusion Matrix'
+    classifierSVC = 'Naive Bayes SVC Confusion Matrix'
+    classifierBest = 'TF-IDF Best Model Confusion Matrix'
     nom = 'NB'
 
     # Create target
@@ -466,6 +384,14 @@ def naiveBayes(dataset):
     #print('Naive Bayes Tdidf score: ', tfidf_nb_score)
     #print('Naive Bayes Count score: ', count_nb_score)
 
+    # Create Linear SVM model with tf-idf approach, since it is slightly higher
+    tfidf_svc = LinearSVC()
+    tfidf_svc.fit(tfidf_train, y_train)
+    tfidf_svc_pred = tfidf_svc.predict(tfidf_test)
+    tfidf_svc_score = metrics.accuracy_score(y_test, tfidf_svc_pred)
+
+    #print('Naive Bayes SVC score: ', tfidf_svc_score)
+
     # Calculate accuracy of model over testing data & confusion matrix
     print('\n*** Multinominal Naive Bayes Classifier ***')
     print('\n-- Tf-idf')
@@ -474,43 +400,48 @@ def naiveBayes(dataset):
     print('\n-- Count')
     accuracy(y_test, count_nb_pred)
     dispConfusionMatrix(y_test, count_nb_pred, classifierCount, nom)
-
-
+    print('\n-- SVC')
+    accuracy(y_test, tfidf_svc_pred)
+    dispConfusionMatrix(y_test, count_nb_pred, classifierSVC, nom)
 
    
-###  Linear SVC Classifier  ###
-def linearSVC(dataset):
-    classifierSVC = 'Linear SVC Confusion Matrix'
-    nom = 'SVC'
+    # Create pipeline
+    pipe = Pipeline(steps = [('tfidf_vectorization', TfidfVectorizer()), ('classifier', MultinomialNB)])
 
-    # Create target
-    y = dataset['label']
+    # Create dictionary with hyperparameters
+    search_space = [{'classifier': [MultinomialNB()]},
+                    {'classifier': [LinearSVC()]},
+                    {'classifier': [PassiveAggressiveClassifier()]},
+                    {'classifier': [LogisticRegression()]},
+                    {'classifier': [DecisionTreeClassifier()]},
+                    {'classifier': [RandomForestClassifier()]},
+                    {'classifier': [LogisticRegression()],'classifier__solver': ['liblinear']},
+                    {'classifier': [KNeighborsClassifier()], 'classifier__n_neighbors': [5,6,7,8]}]
+    
+    # Create the GridSearchCV object, Area Under the Curve of the Receiver Operating Characteristics curve
+    scoring = {'AUC': 'roc_auc', 'Accuracy': metrics.make_scorer(metrics.accuracy_score)}
+    grid = GridSearchCV(estimator = pipe, param_grid=search_space, cv=10, scoring=scoring, return_train_score=True, n_jobs=-1, refit='AUC')
 
-    # Divide data for training and testing (currently 80:20 - train:test)
-    x_train, x_test, y_train, y_test = train_test_split(dataset['text'], y, test_size = 0.2, random_state = 11)
+    # Fit GridSearch object
+    best_model = grid.fit(x_train, y_train)
+    print('Best: %f using %s' % (best_model.best_score_, best_model.best_params_))
 
-    # Pre-process data with CountVectorizer and TfidfVectorizor because ML algorithms only work with numerical data
-    # CountVectorizer creates dictionary with occurrence number of tokens
-    count_vectorizer = CountVectorizer(stop_words='english', min_df = 0.05, max_df = 0.9)
-    count_train = count_vectorizer.fit_transform(x_train, y_train)
-    count_test = count_vectorizer.transform(x_test)
-
-    # TfidfVectorizer creates dictionary with tf-idf values of tokens
-    # It determines the importance of a particular token, if it is common - value will be low, if it is rare - value will be high
-    tfidf_vectorizer = TfidfVectorizer(stop_words = 'english', min_df = 0.05, max_df = 0.7)
-    tfidf_train = tfidf_vectorizer.fit_transform(x_train, y_train)
-    tfidf_test = tfidf_vectorizer.transform(x_test)
-
-    # Create Linear SVM model with tf-idf 
-    tfidf_svc = LinearSVC()
-    tfidf_svc.fit(tfidf_train, y_train)
-    tfidf_svc_pred = tfidf_svc.predict(tfidf_test)
-    tfidf_svc_score = metrics.accuracy_score(y_test, tfidf_svc_pred)
+    best_model_pred = best_model.predict(x_test)
 
     # Calculate accuracy of model over testing data & confusion matrix
-    print('\n*** Linear SVC Classifier ***')
-    accuracy(y_test, tfidf_svc_pred)
-    dispConfusionMatrix(y_test, tfidf_svc_pred, classifierSVC, nom)
+    print('\n*** TF-IDF Best Model ***')
+
+    accuracy(y_test, best_model_pred)
+    dispConfusionMatrix(y_test, best_model_pred, classifierBest, 'BEST-TF-IDF')
+    
+
+    return best_model
+
+
+    
+
+    
+
 
 
 ###########################################################################
@@ -523,7 +454,6 @@ dataFile = './kaggle-covid-news.csv'
 #dataFile = './general-news.csv'
 #dataFile = './covid-news.csv'
 #dataFile = './general-WELFake.csv'
-#dataFile = './preproc_combo.csv'
 
 # Load and read dataset
 data = read(dataFile)
@@ -541,11 +471,7 @@ x_train, x_test, y_train, y_test = prepareData(data)
 
 # Execute Classifiers
 passAggrModel = passiveAggressive(x_train, x_test, y_train, y_test)
-logicRegModel = logicRegression(x_train, x_test, y_train, y_test)
-decTreeModel = decisionTree(x_train, x_test, y_train, y_test)
-randForModel = randomForest(x_train, x_test, y_train, y_test)
 naiveBayesModel = naiveBayes(data)
-linearSVCModel = linearSVC(data)
 
 
 ##########################################################################
@@ -564,21 +490,6 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 #print("Confidence: ", round(conf[0][0]*100,2), "%")
 
-# Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
-print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-
-# Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
-print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 # Naive Bayes Classifier result
 #input = [news]
@@ -588,10 +499,10 @@ print('Random Forest result is: \t', result[0], ' - with confidence rating of  '
 #vecNews = news.toarray()
 #print(vecNews)
 #naiveBayesModel.fit(vecNews).values
-#result = naiveBayesModel.predict([news])
+result = naiveBayesModel.predict([news])
 #conf = naiveBayesModel.predict_proba([news])
 #print('Naive Bayes result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Naive Bayes result is: \t', result[0])
+print('Naive Bayes result is: \t', result[0])
 
 ########################################
 
@@ -604,20 +515,6 @@ result = passAggrModel.predict([news])
 conf = passAggrModel.predict_proba([news])
 print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-# Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
-print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
-print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 ########################################
 
@@ -630,20 +527,6 @@ result = passAggrModel.predict([news])
 conf = passAggrModel.predict_proba([news])
 print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
-# Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
-print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
-print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 ########################################
 
@@ -655,21 +538,6 @@ print('\nNews article reads: ', news, '\n')
 result = passAggrModel.predict([news])
 conf = passAggrModel.predict_proba([news])
 print('Passive Aggressive result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
-print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
-print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 
 ##########################################################################
@@ -689,21 +557,6 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 #print("Confidence: ", round(conf[0][0]*100,2), "%")
 
-# Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
-print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-
-# Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
-print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 ########################################
 
@@ -719,21 +572,6 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 #print("Confidence: ", round(conf[0][0]*100,2), "%")
 
-# Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
-print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-
-# Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
-print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 ########################################
 
@@ -749,21 +587,6 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 #print("Confidence: ", round(conf[0][0]*100,2), "%")
 
-# Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
-print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-
-# Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
-print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
 ########################################
 
@@ -779,19 +602,4 @@ print('Passive Aggressive result is: \t', result[0], ' - with confidence rating 
 #print('Passive Aggressive confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
 #print("Confidence: ", round(conf[0][0]*100,2), "%")
 
-# Logic Regression result
-result = logicRegModel.predict([news])
-conf = logicRegModel.predict_proba([news])
-print('Logic Regression result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-#print('Logic Regression confidence rating of: ', round(conf[0][0]*100,2), '% fake,', round(conf[0][1]*100,2), '% real')
-
-# Decision Tree Classifier result
-result = decTreeModel.predict([news])
-conf = decTreeModel.predict_proba([news])
-print('Decision Tree result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
-
-# Random Forest Classifier result
-result = randForModel.predict([news])
-conf = randForModel.predict_proba([news])
-print('Random Forest result is: \t', result[0], ' - with confidence rating of  ', round(conf[0][0]*100,2), '% fake, ', round(conf[0][1]*100,2), '% real')
 
