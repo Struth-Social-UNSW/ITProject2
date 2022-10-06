@@ -16,6 +16,21 @@
 						checkboxes[i].checked = source.checked;
 				}
 			}
+			function CheckForAtLeastOneSelection() {
+				var form = document.getElementById('TwitterResultsSelectionForm');
+				var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+				var Checked = 0
+				for (var i = 0; i < checkboxes.length; i++) {
+					if (checkboxes[i].checked == 1) {
+						Checked = 1
+					}
+				}
+				if (Checked == 0) {
+					alert('You must select at least one Tweet to analyse!');
+					event.preventDefault();
+					event.stopPropagation();
+				}
+			}
 		</script>
 		<style>
 			table {
@@ -123,7 +138,7 @@
 		<div class='container'>
 			<p><b>Warning!</b> To minimise inaccuracies, this application provides no content filtering</p>
 			<p>Latest Tweets for: <b>{{searchTopic}}</b></p>
-			<form action="{{ url_for('twitterML') }}" method="POST">
+			<form id="TwitterResultsSelectionForm" action="{{ url_for('twitterML') }}" onsubmit="CheckForAtLeastOneSelection()" method="POST">
 				<table class="table1">
 					<!-- Table headers -->
 					<tr style="font-weight:bold">
