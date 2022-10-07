@@ -15,8 +15,7 @@ def RecentTweetsWrapper(Query: str):
     # Search Recent Tweets
 
     # This endpoint/method returns Tweets from the last seven days
-
-    response = client.search_recent_tweets(f"{Query} -is:retweet lang:en", max_results=10, tweet_fields=['author_id'])
+    response = client.search_recent_tweets((f'"{str(Query)}" -is:retweet lang:en'), max_results=10, tweet_fields=['author_id'])
     # The method returns a Response object, a named tuple with data, includes,
     # errors, and meta fields
     # print(response.meta)
@@ -56,7 +55,7 @@ def ResolveAuthorUsernameFromID(ID):
 
 
 if __name__ == "__main__":
-    ReturnedTweets = RecentTweetsWrapper("dwhjdhwadj")
+    ReturnedTweets = RecentTweetsWrapper("covid and is")
     for i in ReturnedTweets:
         print(i)
     print('###########################')
