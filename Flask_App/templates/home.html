@@ -4,47 +4,47 @@
 <head>
 	<meta charset="utf-8">
 	<title>Fake News Detection</title>
-	<link rel="icon" type="image/x-icon" href="/static/StruthSocial_Icon.jpg">
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-		<style>
-			.navbar {
-				z-index: 10;
-				background-color: #F8F9FA;
-				position: fixed;
-				width: 100%;
-			}
+	<link rel="icon" type="image/x-icon" href="/static/StruthSocial_Icon4.png">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<style>
+		.navbar {
+			z-index: 10;
+			background-color: rgb(216, 224, 251);
+			position: fixed;
+			width: 100%;
+		}
 
-			/* The sidebar menu */
-			.sidenav {
-				height: 100%;
-				width: 160px;
-				position: fixed;
-				z-index: 0;
-				top: 0;
-				background-color: #F8F9FA;
-				padding-top: 80px;
-			}
+		/* The sidebar menu */
+		.sidenav {
+			height: 100%;
+			width: 160px;
+			position: fixed;
+			z-index: 0;
+			top: 0;
+			background-color: rgb(216, 224, 251);
+			padding-top: 40px;
+		}
 
-			/* The navigation menu links */
-			.sidenav a {
-				padding: 6px 8px 6px 16px;
-				text-decoration: none;
-				font-size: 16px;
-				color: #707071;
-				display: block;
-			}
+		/* The navigation menu links */
+		.sidenav a {
+			padding: 6px 8px 6px 16px;
+			text-decoration: none;
+			font-size: 16px;
+			color: #707071;
+			display: block;
+		}
 
-			/* When you mouse over the navigation links, change their color */
-			.sidenav a:hover {
-				color: #4A4A4A;
-			}
+		/* When you mouse over the navigation links, change their color */
+		.sidenav a:hover {
+			color: #4A4A4A;
+		}
 
-			.content {
-				padding-left: 160px;
-			}
+		.content {
+			padding-left: 160px;
+		}
 
-		</style>
+	</style>
 </head>
 
 
@@ -52,24 +52,27 @@
 	<!--Nav Bar-->
 	<nav class="navbar navbar-expand-lg navbar-light">
 		<div class="container-fluid">
-			<a class="navbar-brand" href="/">STRUTH SOCIAL FAKE NEWS DETECTION</a>
+			<a class="navbar-brand" href="/"> <img src="static/StruthSocial_Icon4.png" height="25px"><b>&nbsp;&nbsp;&nbsp;STRUTH SOCIAL FAKE NEWS DETECTION</b></a>
 			<div class="nav navbar-nav navbar-right" id="navbarNavAltMarkup">
 				<div class="navbar-nav">
-					<a class="nav-link" href="/">Home</a>
-					<a class="nav-link" href="/about">About Us</a>
+					<a class="nav-link" href="/">&nbsp;&nbsp;&nbsp;Home&nbsp;&nbsp;&nbsp;</a>
+					<a class="nav-link" href="/about">&nbsp;&nbsp;&nbsp;About Us&nbsp;&nbsp;&nbsp;</a>
 					<a class="nav-link" target="_blank"
-						href="https://github.com/Struth-Social-UNSW/ITProject2">GitHub</a>
+						href="https://github.com/Struth-Social-UNSW/ITProject2">&nbsp;&nbsp;&nbsp;GitHub&nbsp;&nbsp;&nbsp;</a>
 				</div>
 			</div>
 		</div>
 	</nav>
 	<!-- Side navigation -->
 	<div class="sidenav">
-		<div class="nav"  id="navbarNavAltMarkup">
+		<div class="nav" id="navbarNavAltMarkup">
+			<hr style="width: 100%;text-align:left;margin-left:0; height:2px; ">
 			<a href="/rawTextML">Raw Text Input ML</a>
 			<a href="/twitterML">Twitter Lookup ML</a>
+			<hr style="width: 100%;text-align:left;margin-left:0; height:2px; ">
 			<a href="/rawTextMLDL">Raw Text Input ML+DL</a>
 			<a href="/twitterMLDL">Twitter Lookup ML+DL</a>
+			<hr style="width: 100%;text-align:left;margin-left:0; height:2px; ">
 		</div>
 	</div>
 	<br>
@@ -78,17 +81,23 @@
 		<br>
 		<br>
 		<div class='container'>
-		<p style=text-align:center><b>A fake news detection web application using
-			Machine Learning algorithms, deployed locally using the Flask Python
-			Framework. </b></p>
+			<p style=text-align:center><b>A fake news detection web application using
+					Machine Learning algorithms, deployed locally using the Flask Python
+					Framework. </b></p>
 			<br>
-		<p style=text-align:center style="padding:50px" style="text-align: justify;">With the widespread and ever-increasing use of and reliance on social media platforms, 
-			information, news and current affairs have become endlessly accessible on all platforms. Fake news itself, is the existence of false or misleading information 
-			presented to readers as legitimate news. Creators of fake news can have various motives, often intending to damage reputation of persons or entities, money making scams, 
-			political agendas or conspiracy theories. This misinformation can contain false and/or exaggerated claims, provoking readers to share the information, and potentially 
-			causing them to go viral due to the media propagation and sharing algorithms. Hence, it is important to recognise and ascertain the legitimacy of sources with the goal 
-			of protecting people and therefore wider society from those intending to mislead others. </p>
-		<p style=text-align:center style="padding:50px" style="text-align: justify;"> <br><i>Please select an input mode on the left to get started!
+			<p style=text-align:center style="padding:50px" style="text-align: justify;">With the widespread and
+				ever-increasing use of and reliance on social media platforms,
+				information, news and current affairs have become endlessly accessible on all platforms. Fake news
+				itself, is the existence of false or misleading information
+				presented to readers as legitimate news. Creators of fake news can have various motives, often intending
+				to damage reputation of persons or entities, money making scams,
+				political agendas or conspiracy theories. This misinformation can contain false and/or exaggerated
+				claims, provoking readers to share the information, and potentially
+				causing them to go viral due to the media propagation and sharing algorithms. Hence, it is important to
+				recognise and ascertain the legitimacy of sources with the goal
+				of protecting people and therefore wider society from those intending to mislead others. </p>
+			<p style=text-align:center style="padding:50px" style="text-align: justify;"> <br><i>Please select an input
+					mode on the left to get started!
 			</p>
 		</div>
 	</div>
