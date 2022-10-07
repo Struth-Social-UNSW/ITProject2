@@ -21,7 +21,8 @@ def home():
 def about():
     return render_template('about.html')
 
-###### ML PAGES
+
+######  Machine Learning Pages  ######
 
 # RAW TEXT routing
 @app.route("/rawTextML")
@@ -69,7 +70,8 @@ def analysisML():
     print(temparr)
     return render_template('analysisML.html', passedTweets = passedTweets)
 
-####### MLDL Pages
+
+######  Machine Learning + Deep Learning Pages  ######
 
 # RAW TEXT routing
 @app.route("/rawTextMLDL")
@@ -118,6 +120,7 @@ def analysisMLDL():
     print(temparr)
     return render_template('analysisMLDL.html', passedTweets = passedTweets)
 
-# Running app, debug mode can be changed here
+
+### Running app, debug mode can be changed here
 if __name__ == '__main__':
     app.run(debug=True)
