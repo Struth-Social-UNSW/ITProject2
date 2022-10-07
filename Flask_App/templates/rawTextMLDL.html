@@ -31,7 +31,7 @@
 			/* The sidebar menu */
 			.sidenav {
 				height: 100%;
-				width: 160px;
+				width: 170px;
 				position: fixed;
 				z-index: 0;
 				top: 0;
@@ -96,7 +96,7 @@
 			<a href="/rawTextML">Raw Text Input ML</a>
 			<a href="/twitterML">Twitter Lookup ML</a>
 			<hr style="width: 100%;text-align:left;margin-left:0; height:2px; ">
-			<a href="/rawTextMLDL">Raw Text Input ML+DL</a>
+			<a href="/rawTextMLDL"><b>Raw Text Input ML+DL</b></a>
 			<a href="/twitterMLDL">Twitter Lookup ML+DL</a>
 			<hr style="width: 100%;text-align:left;margin-left:0; height:2px; ">
 		</div>
@@ -107,6 +107,7 @@
 			<br>
 			<br>
 			<!--		form for collecting user input-->
+			<h4><b>&nbsp;&nbsp;&nbsp;Raw Text Input ML + DL</b></h4>
 			<form id="InputForm" action="{{ url_for('rawTextMLDL') }}" method="POST">
 				<p style=text-align:center>Enter text below:</p>
 				<div class="col-three-forth text-center col-md-offset-2">

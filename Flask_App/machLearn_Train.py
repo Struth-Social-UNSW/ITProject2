@@ -477,8 +477,8 @@ def getConfidence(ConfidenceArray):
 #####  Main Program  #####
 def Main(InputArray):
     # Dataset source
-    dataFile = './preproc_combo.csv'
-    # dataFile = './kaggle-covid-news.csv'
+    # dataFile = './preproc_combo.csv'
+    dataFile = './kaggle-covid-news.csv'
     # dataFile = './general-news.csv'
     # dataFile = './general-WELFake.csv'
 
