@@ -112,6 +112,11 @@ def preprocess(dataset):
     dataset['text'] = dataset['text'].apply(punctuation_removal)
     #print('\nDataset.head: \n', dataset.head())
 
+    # Remove URL starting with 'http' or 'https', special characters and tags
+    #dataset['text'] = dataset['text'].str.replace(r's*https?://S+(s+|$)', ' ').str.strip()
+    dataset['text'] = dataset['text'].str.replace('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', ' ')
+    dataset['text'] = dataset['text'].str.replace(r"[\"\'\|\?\=\.\<\>\@\#\*\{\}\_\,]", '')
+
     # Remove emojis
     filter_char = lambda c: ord(c) < 256
     dataset['text'] = dataset['text'].apply(lambda s: ''.join(filter(filter_char, s)))
