@@ -16,35 +16,35 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 def home():
     return render_template('home.html')
 
-# RAW TEXT routing
-@app.route("/rawText")
-def rawText():
-    return render_template('rawText.html')
-
-# for passing variables from form to script
-@app.route('/rawText', methods=['POST'])
-def webapp():
-    searchInput = []
-    searchInput.append(request.form['searchInput'])
-    session['selectedTweets'] = searchInput
-    return redirect("analysis", code=302)
-
-
 # ABOUT PAGE routing
 @app.route("/about")
 def about():
     return render_template('about.html')
 
 
-# TWITTER PAGE routing
-@app.route("/twitter")
-def twitter():
-    return render_template('twitter.html')
+######  Machine Learning Pages  ######
 
+# RAW TEXT routing
+@app.route("/rawTextML")
+def rawTextML():
+    return render_template('rawTextML.html')
 
 # for passing variables from form to script
-@app.route("/twitter", methods=['POST'])
-def handle():
+@app.route('/rawTextML', methods=['POST'])
+def webappML():
+    searchInput = []
+    searchInput.append(request.form['searchInput'])
+    session['selectedTweets'] = searchInput
+    return redirect("analysisML", code=302)
+
+# TWITTER PAGE routing
+@app.route("/twitterML")
+def twitterML():
+    return render_template('twitterML.html')
+
+# for passing variables from form to script
+@app.route("/twitterML", methods=['POST'])
+def handleML():
     divShown = False
     searchButtonClicked = False
     if request.form['Submit'] == 'search':
@@ -53,24 +53,74 @@ def handle():
         tweets = tweepy_wrapper.RecentTweetsWrapper(searchTopic)
         if tweets:
             divShown = True
-        return render_template('twitter.html', tweets=tweets, searchTopic=searchTopic, divShown=divShown, searchButtonClicked=searchButtonClicked)
+        return render_template('twitterML.html', tweets=tweets, searchTopic=searchTopic, divShown=divShown, searchButtonClicked=searchButtonClicked)
     elif request.form['Submit'] == 'analyse':
         session['selectedTweets'] = request.form.getlist('tweet')
         for checkbox in request.form.getlist('tweet'):
             print(checkbox)   
-        return redirect("analysis", code=302)
-
+        return redirect("analysisML", code=302)
 
 # Analysis PAGE routing
-@app.route("/analysis")
-def analysis():
+@app.route("/analysisML")
+def analysisML():
     array=session.get('selectedTweets', None)
     passedTweets = []
-    temparr = machLearn_Run.Main(array)
+    temparr = machLearn_Run.Main(array, 'ML')
     passedTweets = temparr
     print(temparr)
-    return render_template('analysis.html', passedTweets = passedTweets)
+    return render_template('analysisML.html', passedTweets = passedTweets)
 
-# Running app, debug mode can be changed here
+
+######  Machine Learning + Deep Learning Pages  ######
+
+# RAW TEXT routing
+@app.route("/rawTextMLDL")
+def rawTextMLDL():
+    return render_template('rawTextMLDL.html')
+
+# for passing variables from form to script
+@app.route('/rawTextMLDL', methods=['POST'])
+def webappMLDL():
+    print("debug")
+    searchInput = []
+    searchInput.append(request.form['searchInput'])
+    session['selectedTweets'] = searchInput
+    return redirect("analysisMLDL", code=302)
+
+# TWITTER PAGE routing
+@app.route("/twitterMLDL")
+def twitterMLDL():
+    return render_template('twitterMLDL.html')
+
+# for passing variables from form to script
+@app.route("/twitterMLDL", methods=['POST'])
+def handleMLDL():
+    divShown = False
+    searchButtonClicked = False
+    if request.form['Submit'] == 'search':
+        searchButtonClicked = True
+        searchTopic = request.form['searchTopic']
+        tweets = tweepy_wrapper.RecentTweetsWrapper(searchTopic)
+        if tweets:
+            divShown = True
+        return render_template('twitterMLDL.html', tweets=tweets, searchTopic=searchTopic, divShown=divShown, searchButtonClicked=searchButtonClicked)
+    elif request.form['Submit'] == 'analyse':
+        session['selectedTweets'] = request.form.getlist('tweet')
+        for checkbox in request.form.getlist('tweet'):
+            print(checkbox)   
+        return redirect("analysisMLDL", code=302)
+
+# Analysis PAGE routing
+@app.route("/analysisMLDL")
+def analysisMLDL():
+    array=session.get('selectedTweets', None)
+    passedTweets = []
+    temparr = machLearn_Run.Main(array, 'MLDL')
+    passedTweets = temparr
+    print(temparr)
+    return render_template('analysisMLDL.html', passedTweets = passedTweets)
+
+
+### Running app, debug mode can be changed here
 if __name__ == '__main__':
     app.run(debug=True)

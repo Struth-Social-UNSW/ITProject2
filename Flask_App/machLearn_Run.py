@@ -15,6 +15,12 @@ import nltk
 nltk.download('stopwords')
 import itertools
 import pickle
+from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
+import re
+
+
+#import files
+import dl_preproc_predict
 
 # Import libraries from scikit learn
 from sklearn.feature_extraction.text import CountVectorizer
@@ -35,7 +41,7 @@ from sklearn.naive_bayes import MultinomialNB
 from nltk.corpus import stopwords
 from nltk import tokenize
 
-# Import libraried from WordCloud
+# Import libraries from WordCloud
 from wordcloud import WordCloud
 
 
@@ -145,12 +151,29 @@ def input_preprocess(input_string):
     filter_char = lambda c: ord(c) < 256
     processed_string = ''.join(filter(filter_char, processed_string))
 
+     ## Removing URLs
+    remurl = re.sub('http://\S+|https://\S+', '', processed_string)
+
+    ## Removing Twitter Handles
+    remhand = re.sub('@[^\s]+', '', remurl)
+
+    ## Removing Hashtags (general)
+    remhash4 = re.sub('#[^\s]+', '', remhand)
+    
+    ## Removing twitterurl tags
+    remtwitterurl = remhash4.replace('twitterurl', '')
+    
+    ## Removing twitteruser tags
+    remtwitteruser = remtwitterurl.replace('twitteruser', '')
+    
+    ## Removing rt tags
+    remrt = remtwitteruser.replace('rt', '')
+
     # Remove stopwords
     stop = stopwords.words('english')
-    processed_string = ' '.join([word for word in processed_string.split() if word not in (stop)])
+    processed_string = ' '.join([word for word in remrt.split() if word not in (stop)])
 
     return processed_string
-
 
 
 ###########################################################################
@@ -411,9 +434,27 @@ def randomForest(x_train, x_test, y_train, y_test):
     return model
 
 
+###  Run input through the DL model and yield a prediction  ###
+def DeepLearning(input):
+    # tokenizer = AutoTokenizer.from_pretrained("bvrau/covid-twitter-bert-v2-struth") 
+    pipe = pipeline("text-classification", model='bvrau/covid-twitter-bert-v2-struth')
+    result = pipe(input)
+    resultdict = result[0]
+    label = resultdict['label']
+    score = resultdict['score']
+    RoundedScore = round(score,2)*100
+    # print("** Results **")
+    # print("Determination: "+ label)
+    # print("Certainty: "+str(score)) 
+    DLResults = (label, (f'{str(RoundedScore)}%'))
+
+    return DLResults
+
+
 
 ###########################################################################
 
+###  Clean confidence scores and generate a usefull array  ###
 def getConfidence(ConfidenceArray):
     confidenceMultiplied = [element * 100 for element in ConfidenceArray]
     confidenceRounded = [round(element,2) for element in confidenceMultiplied]
@@ -422,7 +463,7 @@ def getConfidence(ConfidenceArray):
 
 
 #####  Main Program  #####
-def Main(InputArray):
+def Main(InputArray, Mode):
     # Dataset source
     # dataFile = './general-WELFake.csv'
     # dataFile = './kaggle-covid-news.csv'
@@ -488,11 +529,22 @@ def Main(InputArray):
         randForModel_confidence = str(f'{getConfidence(randForModel_confidenceArray)}%')
         # print(randForModel_confidence)
 
+        if Mode == 'ML':
+            
+            ResultsTupple = [IndividualInputText, PassiveAggressiveClassifierResult[0], LogisiticRegressionClassifierResult[0], DecisionTreeClassifierResult[0], RandomForestClassifierResult[0], 
+                            (passAggrModel_confidence, logicRegModel_confidence, decTreeModel_confidence, randForModel_confidence)]
+            Results.append(ResultsTupple)
 
-        ResultsTupple = [IndividualInputText, PassiveAggressiveClassifierResult[0], LogisiticRegressionClassifierResult[0], DecisionTreeClassifierResult[0], RandomForestClassifierResult[0], 
-                        (passAggrModel_confidence, logicRegModel_confidence, decTreeModel_confidence, randForModel_confidence)]
+        elif Mode == 'MLDL':
 
-        Results.append(ResultsTupple)
+            #Perform DL prediction 
+            #MUST RUN: python -m spacy download en_core_web_sm
+            dl_preproccessed_input = dl_preproc_predict.preprocmain(IndividualInputText)
+            DeepLearningResults = DeepLearning(dl_preproccessed_input)
+
+            ResultsTupple = [IndividualInputText, PassiveAggressiveClassifierResult[0], LogisiticRegressionClassifierResult[0], DecisionTreeClassifierResult[0], RandomForestClassifierResult[0], 
+                            (passAggrModel_confidence, logicRegModel_confidence, decTreeModel_confidence, randForModel_confidence), DeepLearningResults]
+            Results.append(ResultsTupple)
     
     print(Results) #Debug
     return Results
@@ -500,10 +552,9 @@ def Main(InputArray):
 
 ##### TEST HARNESS FOR MAIN METHOD #####
 if __name__ == '__main__':
-    Main(['Covid is a hoax'])
-
-    print('\nModel States Successfully Saved!')
-    print('Preprocessed Dataset Successfully Saved!')
+    Main(['Covid is a hoax'], 'ML')
+    print('\n\n################################################################\n\n\n')
+    Main(['Covid is a hoax'], 'MLDL')
 
 
     
