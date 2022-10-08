@@ -437,7 +437,7 @@ def randomForest(x_train, x_test, y_train, y_test):
 ###  Run input through the DL model and yield a prediction  ###
 def DeepLearning(input):
     # tokenizer = AutoTokenizer.from_pretrained("bvrau/covid-twitter-bert-v2-struth") 
-    pipe = pipeline("text-classification", model='bvrau/covid-general-news-bert')
+    pipe = pipeline("text-classification", model='bvrau/covid-twitter-bert-v2-struth')
     result = pipe(input)
     resultdict = result[0]
     label = resultdict['label']
