@@ -81,6 +81,20 @@
 				margin-right: auto;
 				width: 10%;
 			}
+
+			.loader {
+				position: fixed;
+				left: 50%;
+				top: 40%;
+				width: 10%;
+				z-index: 9999;
+				animation: spin 2s linear infinite;
+			}
+
+			@keyframes spin {
+				0% {transform: rotate(0deg);}
+				100% {transform: rotate(360deg);}
+			}
 		</style>
 </head>
 
@@ -133,7 +147,7 @@
 				</div>
 			</form>
 			<br>
-			<img class="center" style="display: none" id="loading" src="./static/loading.gif">
+			<img class="loader" style="display: none" id="loading" src="./static/StruthSocial_IconWhtRem.png">
 		</div>
 		<br>
 		<!--	printing result-->
