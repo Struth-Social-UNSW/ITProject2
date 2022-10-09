@@ -40,7 +40,18 @@
 					document.getElementById("TwitterResultsSelection").style.opacity = "0.5"
 					document.getElementById("TwitterSearch").style.opacity = "0.5"
 					}
+			}
+			function FadeAndShowLoadingGif2() {
+				if(document.getElementById("textarea").value.length != 0)
+				var x = document.getElementById("loading");
+				if (x.style.display === "none") {
+					x.style.display = "block";
+				} else {
+					x.style.display = "none";
 				}
+				document.getElementById("InputForm").style.opacity = "0.5"
+				document.getElementById("jTextarea").style.opacity = "0.5"
+			};
 		</script>
 		<style>
 			table {
@@ -168,11 +179,11 @@
 						<br>
 						<h4 style="text-align:left"><b>&nbsp;&nbsp;&nbsp;Twitter Lookup ML + DL</b></h4>
 						<p>Enter a term below to search Twitter:</p>
-						<input type="text" class="form-control jTextarea mt-3" id="jTextarea'" rows="1"
-							name="searchTopic" placeholder="Enter your text here..." required></input>
+						<textarea id="textarea" class="form-control jTextarea mt-3" id="jTextarea'" rows="1"
+							name="searchTopic" placeholder="Enter your text here..." required></textarea>
 						<br>
 						<button class="btn btn-primary btn-outline btn-md" type="submit" name="Submit"
-							value="search">Search</button>
+							value="search" onclick="FadeAndShowLoadingGif2()">Search</button>
 					</div>
 				</div>
 			</form>
