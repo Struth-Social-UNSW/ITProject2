@@ -68,6 +68,7 @@
 
 			img:hover {
 				transform: scale(2.0);
+				padding-right: 10px;
 			}
 		</style>
 </head>
@@ -125,14 +126,34 @@
 				<!-- table rows -->
 				<tr>
 					<td>{{i[0]}}</td>
-					<td style="border-left: 1px solid #ddd; padding-left: 20px;">{{i[1]}}</td>
-					<td style="border-right: 1px solid #ddd; padding-right: 20px;">{{i[5][0]}}</td>
-					<td>{{i[2]}}</td>
-					<td style="border-right: 1px solid #ddd; padding-right: 20px;">{{i[5][1]}}</td>
-					<td>{{i[3]}}</td>
-					<td style="border-right: 1px solid #ddd; padding-right: 20px;">{{i[5][2]}}</td>
-					<td>{{i[4]}}</td>
-					<td style="border-right: 1px solid #ddd; padding-right: 20px;">{{i[5][3]}}</td>
+					{% if i[1] == "fake"%}
+						<td style="border-left: 1px solid #ddd; padding-left: 20px; background-color: #E6B0AA;">{{i[1]}}</td>
+						<td style="border-right: 1px solid #ddd; padding-right: 20px; background-color: #E6B0AA;">{{i[5][0]}}</td>
+					{% else %}
+						<td style="border-left: 1px solid #ddd; padding-left: 20px; background-color: #ABEBC6;">{{i[1]}}</td>
+						<td style="border-right: 1px solid #ddd; padding-right: 20px; background-color: #ABEBC6;">{{i[5][0]}}</td>
+					{% endif %}
+					{% if i[2] == "fake"%}
+						<td style="border-left: 1px solid #ddd; padding-left: 20px; background-color: #E6B0AA;">{{i[2]}}</td>
+						<td style="border-right: 1px solid #ddd; padding-right: 20px; background-color: #E6B0AA;">{{i[5][1]}}</td>
+					{% else %}
+						<td style="border-left: 1px solid #ddd; padding-left: 20px; background-color: #ABEBC6;">{{i[2]}}</td>
+						<td style="border-right: 1px solid #ddd; padding-right: 20px; background-color: #ABEBC6;">{{i[5][1]}}</td>
+					{% endif %}
+					{% if i[3] == "fake"%}
+						<td style="border-left: 1px solid #ddd; padding-left: 20px; background-color: #E6B0AA;">{{i[3]}}</td>
+						<td style="border-right: 1px solid #ddd; padding-right: 20px; background-color: #E6B0AA;">{{i[5][2]}}</td>
+					{% else %}
+						<td style="border-left: 1px solid #ddd; padding-left: 20px; background-color: #ABEBC6;">{{i[3]}}</td>
+						<td style="border-right: 1px solid #ddd; padding-right: 20px; background-color: #ABEBC6;">{{i[5][2]}}</td>
+					{% endif %}
+					{% if i[4] == "fake"%}
+						<td style="border-left: 1px solid #ddd; padding-left: 20px; background-color: #E6B0AA;">{{i[4]}}</td>
+						<td style="border-right: 1px solid #ddd; padding-right: 20px; background-color: #E6B0AA;">{{i[5][3]}}</td>
+					{% else %}
+						<td style="border-left: 1px solid #ddd; padding-left: 20px; background-color: #ABEBC6;">{{i[4]}}</td>
+						<td style="border-right: 1px solid #ddd; padding-right: 20px; background-color: #ABEBC6;">{{i[5][3]}}</td>
+					{% endif %}
 				</tr>
 				{%endfor%}
 			</table>
