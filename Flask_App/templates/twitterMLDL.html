@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Fake News Detection</title>
+	<title>Twitter Lookup ML+DL - Fake News Detection</title>
 	<link rel="icon" type="image/x-icon" href="/static/StruthSocial_Icon.jpg">
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
 			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -40,7 +40,18 @@
 					document.getElementById("TwitterResultsSelection").style.opacity = "0.5"
 					document.getElementById("TwitterSearch").style.opacity = "0.5"
 					}
+			}
+			function FadeAndShowLoadingGif2() {
+				if(document.getElementById("textarea").value.length != 0)
+				var x = document.getElementById("loading");
+				if (x.style.display === "none") {
+					x.style.display = "block";
+				} else {
+					x.style.display = "none";
 				}
+				document.getElementById("InputForm").style.opacity = "0.5"
+				document.getElementById("jTextarea").style.opacity = "0.5"
+			};
 		</script>
 		<style>
 			table {
@@ -64,6 +75,17 @@
 				background-color: rgb(216, 224, 251);
 				position: fixed;
 				width: 100%;
+			}
+
+			.nav-link {
+				background-color: rgb(216, 224, 251);
+				text-decoration: none;
+				border-radius: 8px;
+			}
+
+			.nav-link:hover {
+				background-color: #B2BABB;
+				border-radius: 8px;
 			}
 
 			/* The sidebar menu */
@@ -100,6 +122,20 @@
 				margin-right: auto;
 				width: 10%;
 			}
+
+			.loader {
+				position: fixed;
+				left: 50%;
+				top: 40%;
+				width: 10%;
+				z-index: 9999;
+				animation: spin 2s linear infinite;
+			}
+
+			@keyframes spin {
+				0% {transform: rotate(0deg);}
+				100% {transform: rotate(360deg);}
+			}
 		</style>
 </head>
 
@@ -122,9 +158,11 @@
 	<div class="sidenav">
 		<div class="nav" id="navbarNavAltMarkup">
 			<hr style="width: 100%;text-align:left;margin-left:0; height:2px; ">
+			<h6 style="padding-left: 10px; color: #707071;"><b><i>Machine Learning</i></b></h6>
 			<a href="/rawTextML">Raw Text Input ML</a>
 			<a href="/twitterML">Twitter Lookup ML</a>
 			<hr style="width: 100%;text-align:left;margin-left:0; height:2px; ">
+			<h6 style="padding-left: 10px; color: #707071;"><b><i>Deep Learning</i></b></h6>
 			<a href="/rawTextMLDL">Raw Text Input ML+DL</a>
 			<a href="/twitterMLDL"><b>Twitter Lookup ML+DL</b></a>
 			<hr style="width: 100%;text-align:left;margin-left:0; height:2px; ">
@@ -141,17 +179,17 @@
 						<br>
 						<h4 style="text-align:left"><b>&nbsp;&nbsp;&nbsp;Twitter Lookup ML + DL</b></h4>
 						<p>Enter a term below to search Twitter:</p>
-						<input type="text" class="form-control jTextarea mt-3" id="jTextarea'" rows="1"
-							name="searchTopic" placeholder="Enter your text here..." required></input>
+						<textarea id="textarea" type="text" class="form-control jTextarea mt-3" id="jTextarea'" rows="1"
+							name="searchTopic" placeholder="Enter your text here..." required></textarea>
 						<br>
 						<button class="btn btn-primary btn-outline btn-md" type="submit" name="Submit"
-							value="search">Search</button>
+							value="search" onclick="FadeAndShowLoadingGif2()">Search</button>
 					</div>
 				</div>
 			</form>
 		</div>
 		<br>
-
+		<img class="loader" style="display: none" id="loading" src="./static/StruthSocial_IconWhtRem.png">
 		{% if tweets %}
 		{% if divShown == True %}
 		<!--	table to print results-->
@@ -198,8 +236,9 @@
 					</tr>
 				</table>
 			</form>
-			<img class="center" style="display: none" id="loading" src="./static/loading.gif">
+			
 		</div>
+		
 		<br><br><br><br>
 		{% endif %}
 		{% else %}
