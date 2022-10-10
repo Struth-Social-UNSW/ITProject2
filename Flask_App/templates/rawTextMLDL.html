@@ -19,6 +19,16 @@
 				document.getElementById("InputForm").style.opacity = "0.5"
 				document.getElementById("jTextarea").style.opacity = "0.5"
 			};
+			function CheckChar(field){
+				var Warning = document.getElementById("charNum");
+				var chars = field.value.length;
+				if (chars > 482) {
+					Warning.innerHTML = "You have exceeded the character limit of 512 characters!";
+					field.value = field.value.substring(0, 482);
+				} else if (chars <= 482) {
+					Warning.innerHTML = "";
+				}
+			}
 		</script>
 		<style>
 			.navbar {
@@ -139,9 +149,10 @@
 				<p style=text-align:center>Enter text below:</p>
 				<div class="col-three-forth text-center col-md-offset-2">
 					<div class="form-group">
-						<textarea id="textarea" class="form-control jTextarea mt-3" id="jTextarea'" rows="1" name="searchInput"
+						<textarea id="textarea" class="form-control jTextarea mt-3" id="jTextarea'" rows="1" name="searchInput" onkeyup="CheckChar(this)"
 							placeholder="Enter your text here..." required>{{searchInput}}</textarea>
 							<br>
+							<strong><p id="charNum" style="color: #CE0000;"></p></strong>
 						<button class="btn btn-primary btn-outline btn-md" type="submit" name="predict" onclick="FadeAndShowLoadingGif()">Predict</button>
 					</div>
 				</div>
