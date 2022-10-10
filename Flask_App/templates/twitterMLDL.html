@@ -52,6 +52,16 @@
 				document.getElementById("InputForm").style.opacity = "0.5"
 				document.getElementById("jTextarea").style.opacity = "0.5"
 			};
+			function CheckChar(field){
+				var Warning = document.getElementById("charNum");
+				var chars = field.value.length;
+				if (chars > 482) {
+					Warning.innerHTML = "You have exceeded the character limit of 512 characters!";
+					field.value = field.value.substring(0, 482);
+				} else if (chars <= 482) {
+					Warning.innerHTML = "";
+				}
+			}
 		</script>
 		<style>
 			table {
@@ -179,9 +189,10 @@
 						<br>
 						<h4 style="text-align:left"><b>&nbsp;&nbsp;&nbsp;Twitter Lookup ML + DL</b></h4>
 						<p>Enter a term below to search Twitter:</p>
-						<textarea id="textarea" type="text" class="form-control jTextarea mt-3" id="jTextarea'" rows="1"
+						<textarea id="textarea" type="text" class="form-control jTextarea mt-3" id="jTextarea'" rows="1" onkeyup="CheckChar(this)"
 							name="searchTopic" placeholder="Enter your text here..." required></textarea>
 						<br>
+						<strong><p id="charNum" style="color: #CE0000;"></p></strong>
 						<button class="btn btn-primary btn-outline btn-md" type="submit" name="Submit"
 							value="search" onclick="FadeAndShowLoadingGif2()">Search</button>
 					</div>
