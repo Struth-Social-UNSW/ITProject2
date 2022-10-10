@@ -27,30 +27,22 @@ Issues will be tracked on Trello
 ### For the frontend
 1. In terminal or command prompt, navigate to Flask_App folder.
 2. Install the following requirements using the following commands
-  - pip install flask
-  - pip install tweepy 
-3. For MacOS:
-  - export FLASK_APP=flaskapp.py
-4. For Windows:
-  - set FLASK_APP=flaskapp.py
-5. Once exported, use:
-  - flask run
-6. This will create a locally hosted web app located at http://localhost:5000/
-7. Web server can be terminated using CTRL + C
-8. To run in debug mode:
-  - export FLASK_DEBUG = 1
-  - flask run
-### For the backend
-  - Inside the backend folder, open a terminal window. Then run the command: 
+  - pip install FrontendRequirements.txt
+3. Inside the backend folder, open a terminal window. Then run the command:
   - pip install -r requirements.txt
-  - After running the install, you'll also need to run the command:
+4. After running the install, you'll also need to run the command:
   - spacy download en
   - This will ensure you are able to run preprocessing tasks with the required dataset
+5. To launch the webapp enter the following command:
+  - python3 flaskapp.py
+6. This will create a locally hosted web app located at http://localhost:5000/
+7. Web server can be terminated using CTRL + C
+
 
 ## Front-end
 
 ### Development commands
-- ```CMD HERE```: Explain what the command does
+- N/A
 
 ### Technologies in use
 - **Python 3.8**: Underlying language enabling the program to run
@@ -60,34 +52,37 @@ Issues will be tracked on Trello
 ## Back-end
 
 ### Development commands
-- ```CMD HERE```: Explain what the command does
+- N/A
 
 ### Technologies in use
 - **Python 3.8**: Underlying language enabling the program to run
-- **covid-twitter-bert**: Pretrained BERT model for analysing COVID-19 Twitter data
-  - **tensorflow==2.2.0**: Tensorflow is the Deep Learning library which will enable to BERT model to function as expected
-  - **tensorflow_hub**: A repository of trained ML/DL models
-  - **tensorflow_addons==0.11.2**: A library containing useful tools for the Tensorflow package
-  - **gin-config**: Lightweight config framework for Python, useful for the injection of multiple parameters in ML/DL tasks
-  - **tqdm**: A package containing a graphical progress bar
+  - **torch**: PyTorch packages for Deep Learning tasks
+  - **Transformers**: HuggingFace's library for NLP tasks
+  - **Protobuf 3.20.1**: Google's library for serializing structured data
+  - **Datasets**: HuggingFace's library for loading datasets
+  - **Numpy**: Python library for scientific computing
+  - **Wordcloud**: Python library for creating wordclouds
+  - **Seaborn**: Python library for data visualization
+  - ****:
   - **pandas**: Open source data analysis and manipulation tool
   - **scikit-learn**: Preprocessing and feature extraction tool
-  - **google-cloud-storage**: Access path for use of TPUs in DL tasks
   - **spacy**: A commercial grade NLP package
   - **emoji**: Contains the codes for all current emojis
   - **unidecode**: Decodes unicode strings into ASCII characters
-  - **cloud-tpu-client**: Interface for using TPUs
-  - **sentencepiece**: Unsupervised text tokeniser/detokeniser
+  - **nltk**: Natural Language Toolkit, a package containing a variety of NLP tools
+  - **matplotlib**: A plotting library for Python
+- **HuggingFace**
+  - Hosting of the DL model, which is located [here](https://huggingface.co/bvrau/covid-twitter-bert-v2-struth)
 
 ## The Team
 Callum Pevere  (c.pevere@student.unsw.edu.au)
-- Project Manager, Technical Lead, Technical Developer 
+- Project Manager, Client Liaison, Technical Developer, Lead Tester
 
 Liam Weber (l.weber@student.unsw.edu.au)
-- Technical Developer, System Architect, Testing
+- Frontend Developer, Testing
 
 Breydon Verryt-Reid (b.verrytreid@student.unsw.edu.au)
-- Technical Developer, Quality Assurance, Testing  
+- Deep Learning Developer, Testing
 
 Justin Macey (j.macey@student.unsw.edu.au) 
-- Documentation Manager, Client Liaison, Technical Assistant, Testing  
+- Machine Learning Developer, Testing, Documentation Manager
