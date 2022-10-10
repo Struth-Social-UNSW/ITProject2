@@ -60,37 +60,34 @@ Issues will be tracked on Trello
 ## Back-end
 
 ### Development commands
-- N/A
+- ```CMD HERE```: Explain what the command does
 
 ### Technologies in use
 - **Python 3.8**: Underlying language enabling the program to run
-  - **torch**: PyTorch packages for Deep Learning tasks
-  - **Transformers**: HuggingFace's library for NLP tasks
-  - **Protobuf 3.20.1**: Google's library for serializing structured data
-  - **Datasets**: HuggingFace's library for loading datasets
-  - **Numpy**: Python library for scientific computing
-  - **Wordcloud**: Python library for creating wordclouds
-  - **Seaborn**: Python library for data visualization
-  - ****:
+- **covid-twitter-bert**: Pretrained BERT model for analysing COVID-19 Twitter data
+  - **tensorflow==2.2.0**: Tensorflow is the Deep Learning library which will enable to BERT model to function as expected
+  - **tensorflow_hub**: A repository of trained ML/DL models
+  - **tensorflow_addons==0.11.2**: A library containing useful tools for the Tensorflow package
+  - **gin-config**: Lightweight config framework for Python, useful for the injection of multiple parameters in ML/DL tasks
+  - **tqdm**: A package containing a graphical progress bar
   - **pandas**: Open source data analysis and manipulation tool
   - **scikit-learn**: Preprocessing and feature extraction tool
+  - **google-cloud-storage**: Access path for use of TPUs in DL tasks
   - **spacy**: A commercial grade NLP package
   - **emoji**: Contains the codes for all current emojis
   - **unidecode**: Decodes unicode strings into ASCII characters
-  - **nltk**: Natural Language Toolkit, a package containing a variety of NLP tools
-  - **matplotlib**: A plotting library for Python
-- **HuggingFace**
-  - Hosting of the DL model, which is located [here](https://huggingface.co/bvrau/covid-twitter-bert-v2-struth)
+  - **cloud-tpu-client**: Interface for using TPUs
+  - **sentencepiece**: Unsupervised text tokeniser/detokeniser
 
 ## The Team
 Callum Pevere  (c.pevere@student.unsw.edu.au)
-- Project Manager, Client Liaison, Technical Developer, Lead Tester
+- Project Manager, Technical Lead, Technical Developer 
 
 Liam Weber (l.weber@student.unsw.edu.au)
-- Frontend Developer, Testing
+- Technical Developer, System Architect, Testing
 
 Breydon Verryt-Reid (b.verrytreid@student.unsw.edu.au)
-- Deep Learning Developer, Testing
+- Technical Developer, Quality Assurance, Testing  
 
 Justin Macey (j.macey@student.unsw.edu.au) 
-- Machine Learning Developer, Testing, Documentation Manager
+- Documentation Manager, Client Liaison, Technical Assistant, Testing  
