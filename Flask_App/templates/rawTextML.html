@@ -11,7 +11,7 @@
 			function CheckChar(field){
 				var Warning = document.getElementById("charNum");
 				var chars = field.value.length;
-				if (chars >= 481) {	
+				if (chars >= 482) {	
 					document.getElementById('charNum').classList.remove('hidden');
 					Warning.innerHTML = "Your input has been resized to less than 512 characters";
 					field.value = field.value.substring(0, 481);
