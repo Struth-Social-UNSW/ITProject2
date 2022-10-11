@@ -169,9 +169,15 @@ def input_preprocess(input_string):
     ## Removing rt tags
     remrt = remtwitteruser.replace('rt', '')
 
+    #convert newlines to spaces
+    newlinetospace = re.sub(r"\r\n", " ", remrt)
+
+    #remove all non alphanumeric and space chars
+    clean_chars = re.sub(r'[^A-Za-z0-9 ]+', '', newlinetospace)
+
     # Remove stopwords
     stop = stopwords.words('english')
-    processed_string = ' '.join([word for word in remrt.split() if word not in (stop)])
+    processed_string = ' '.join([word for word in clean_chars.split() if word not in (stop)])
 
     return processed_string
 
@@ -502,9 +508,9 @@ def Main(InputArray, Mode):
     for IndividualInputText in InputArray:
 
         #Preprocess user input
-        print(f'Raw input: {IndividualInputText}')
+        print(f'\nRaw input: {IndividualInputText}')
         preprocessedIndividualTextInput  = input_preprocess(IndividualInputText)
-        print(f'Preprocessed raw input: {preprocessedIndividualTextInput}')
+        print(f'Preprocessed raw input: {preprocessedIndividualTextInput}\n')
 
         PassiveAggressiveClassifierResult = passAggrModel.predict([preprocessedIndividualTextInput])
         LogisiticRegressionClassifierResult = logicRegModel.predict([preprocessedIndividualTextInput])
